@@ -5,6 +5,9 @@ const empleadoController = require('../controllers/empleadoController');
 const horasTrabajadasController = require('../controllers/horasTrabajadasController');
 const proyectoController = require('../controllers/proyectoController');
 const semanaController = require('../controllers/semanaController');
+const usuarioController = require('../controllers/usuarioController');
+const movimientoController = require('../controllers/movimientoController');
+
 
 
 router.post('/empleados', empleadoController.createEmpleado);
@@ -30,5 +33,29 @@ router.get('/semanas', semanaController.getSemanas);
 router.get('/semanas/:id', semanaController.getSemanaById);
 router.put('/semanas/:id', semanaController.updateSemana);
 router.delete('/semanas/:id', semanaController.deleteSemana);
+
+
+router.post('/usuarios', usuarioController.crearUsuario);
+router.get('/usuarios', usuarioController.obtenerUsuarios);
+router.get('/usuarios/:id', usuarioController.obtenerUsuarioPorId);
+router.put('/usuarios/:id', usuarioController.actualizarUsuario);
+router.delete('/usuarios/:id', usuarioController.eliminarUsuario);
+
+
+router.post('/cajas-chicas', cajaChicaController.crearCajaChica);
+router.get('/cajas-chicas', cajaChicaController.obtenerCajasChicas);
+router.get('/cajas-chicas/:id', cajaChicaController.obtenerCajaChicaPorId);
+router.put('/cajas-chicas/:id', cajaChicaController.actualizarCajaChica);
+router.delete('/cajas-chicas/:id', cajaChicaController.eliminarCajaChica);
+
+
+router.post('/movimientos', movimientoController.crearMovimiento);
+router.get('/movimientos', movimientoController.obtenerMovimientos);
+router.get('/movimientos/:id', movimientoController.obtenerMovimientoPorId);
+router.put('/movimientos/:id', movimientoController.actualizarMovimiento);
+router.delete('/movimientos/:id', movimientoController.eliminarMovimiento);
+
+
+
 
 module.exports = router;

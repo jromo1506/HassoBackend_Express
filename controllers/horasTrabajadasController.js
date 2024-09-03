@@ -1,4 +1,4 @@
-const HorasTrabajadas = require('../models/HorasTrabajadas');
+const HorasTrabajadas = require('../models/HorasTrabajadas.js');
 const express = require('express');
 const router = express.Router();
 
