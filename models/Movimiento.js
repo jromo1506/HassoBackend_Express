@@ -1,4 +1,4 @@
-const mongoose = require('');
+const mongoose = require('mongoose');
 const {Schema} = mongoose;
 
 const MovimientoSchema = new Schema({

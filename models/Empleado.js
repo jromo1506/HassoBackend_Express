@@ -9,9 +9,8 @@ const EmpleadoSchema = new Schema({
     rfc: {
         type: String,
         required: true,
-        unique: true
     },
-    pago: {
+    sueldoHora: {
         type: Number,
         required: true
     }

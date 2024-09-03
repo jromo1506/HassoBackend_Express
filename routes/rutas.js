@@ -7,6 +7,7 @@ const proyectoController = require('../controllers/proyectoController');
 const semanaController = require('../controllers/semanaController');
 const usuarioController = require('../controllers/usuarioController');
 const movimientoController = require('../controllers/movimientoController');
+const cajaChicaController = require('../controllers/cajaChicaController');
 
 
 
