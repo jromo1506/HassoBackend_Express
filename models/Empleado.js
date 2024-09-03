@@ -6,12 +6,12 @@ const EmpleadoSchema = new Schema({
         type: String,
         required: true
     },
-    RFC: {
+    rfc: {
         type: String,
         required: true,
         unique: true
     },
-    sueldoHora: {
+    pago: {
         type: Number,
         required: true
     }

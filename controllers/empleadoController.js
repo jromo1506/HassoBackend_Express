@@ -5,10 +5,14 @@ const Empleado = require('../models/Empleado');
 // Crear un nuevo empleado
 exports.createEmpleado = async (req, res) => {
     try {
+        console.log(req.body);
+        
         const empleado = new Empleado(req.body);
         await empleado.save();
         res.status(201).json(empleado);
     } catch (error) {
+        console.log(error.message);
+        
         res.status(400).json({ error: error.message });
     }
 };
