@@ -13,8 +13,8 @@ const UsuarioSchema = new Schema({
     },
     nivelUsuario: {
         type: String,
-        required: true,
-        enum: ['admin', 'usuario', 'supervisor'] // Ejemplo de niveles de usuario, puedes ajustar según necesites
+        required: false,
+        // enum: ['admin', 'usuario', 'supervisor'] // Ejemplo de niveles de usuario, puedes ajustar según necesites
     }
 });
 

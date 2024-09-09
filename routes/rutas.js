@@ -37,6 +37,7 @@ router.delete('/semanas/:id', semanaController.deleteSemana);
 
 
 router.post('/usuarios', usuarioController.crearUsuario);
+router.post('/usuarios/auth',usuarioController.autenticarUsuario);
 router.get('/usuarios', usuarioController.obtenerUsuarios);
 router.get('/usuarios/:id', usuarioController.obtenerUsuarioPorId);
 router.put('/usuarios/:id', usuarioController.actualizarUsuario);

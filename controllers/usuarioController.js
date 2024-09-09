@@ -1,18 +1,61 @@
 const Usuario = require('../models/Usuario');
 const express = require('express');
 const router = express.Router();
+const bcrypt = require('bcrypt');
+
+
 
 
 // Crear un nuevo usuario
 exports.crearUsuario = async (req, res) => {
     try {
-        const nuevoUsuario = new Usuario(req.body);
+        const saltRounds = 10; // Define el número de rondas de cifrado
+        const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
+
+        // Crea el nuevo usuario con la contraseña cifrada
+        const nuevoUsuario = new Usuario({
+            usuario: req.body.usuario,
+            password: hashedPassword,
+            nivelUsuario: req.body.nivelUsuario
+        });
+
         await nuevoUsuario.save();
         res.status(201).json(nuevoUsuario);
     } catch (error) {
         res.status(500).json({ message: 'Error al crear el usuario', error });
     }
 };
+
+exports.autenticarUsuario = async(req,res) =>{
+    const { usuario, password } = req.body;
+
+    try {
+        const usuarioEncontrado = await Usuario.findOne({ usuario });
+
+        if (!usuarioEncontrado) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        const esValidaLaPassword = await bcrypt.compare(password, usuarioEncontrado.password);
+       
+        if (!esValidaLaPassword) {
+            
+            return res.status(401).json({ message: 'Contraseña incorrecta' });
+        }
+
+        res.status(200).json({
+            message: 'Autenticación exitosa',
+            usuario: {
+                id: usuarioEncontrado._id,
+                usuario: usuarioEncontrado.usuario,
+                nivelUsuario: usuarioEncontrado.nivelUsuario,
+            }
+        });
+    } catch (error) {
+        console.error('Error al autenticar el usuario:', error);  // Registra el error en el servidor
+        res.status(500).json({ message: 'Error al autenticar el usuario', error: error.message });
+    }
+}
 
 // Obtener todos los usuarios
 exports.obtenerUsuarios = async (req, res) => {
