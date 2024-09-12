@@ -3,7 +3,7 @@ const { Schema } = mongoose;
 
 const HorasTrabajadasSchema = new Schema({
     idSemana: {
-        type: Schema.Types.ObjectId,
+        type: String,
         ref: 'Semana',
         required: true
     },
@@ -17,19 +17,19 @@ const HorasTrabajadasSchema = new Schema({
         ref: 'Empleado',
         required: true
     },
+    nombreProyecto: {
+        type: String,
+        required: true
+    },
     horasRegulares: {
         type: Number,
         required: true
     },
     horasExtras: {
-        type: Number,
+        type: Boolean,
         required: true
     },
     pagoHorasRegulares: {
-        type: Number,
-        required: true
-    },
-    pagoHorasExtras: {
         type: Number,
         required: true
     },

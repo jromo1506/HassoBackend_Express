@@ -5,6 +5,7 @@ const router = express.Router();
 
 // Crear nuevas horas trabajadas
 exports.createHorasTrabajadas = async (req, res) => {
+    console.log(req.body)
     try {
         const horasTrabajadas = new HorasTrabajadas(req.body);
         await horasTrabajadas.save();
