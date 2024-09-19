@@ -43,6 +43,10 @@ const GastoSchema = new Schema({
     pedido: {
         type: String,
         required: true
+    },
+    idHojaContable: {
+        type: String,
+        required: true
     }
 });
 
