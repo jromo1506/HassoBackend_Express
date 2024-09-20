@@ -2,11 +2,13 @@ const HojaContable = require('../models/HojaContable');
 
 // Crear una nueva Hoja Contable
 exports.crearHojaContable = async (req, res) => {
+    console.log(req.body)
     try {
         const nuevaHoja = new HojaContable(req.body);
         await nuevaHoja.save();
         res.status(201).json(nuevaHoja);
     } catch (error) {
+        console.log(error)
         res.status(500).json({ error: error.message });
     }
 };

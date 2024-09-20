@@ -8,11 +8,16 @@ const HojaContableSchema = new Schema({
         type: String,
         required: true
     },
-    fechaHoja: {
+    /*fechaHoja: {
         type: Schema.Types.ObjectId,
         ref: 'Usuario',
         required: true
-    }
+    }*/
+
+        fechaHoja: {
+            type: Date,
+            required: true
+        }
 });
 
 
