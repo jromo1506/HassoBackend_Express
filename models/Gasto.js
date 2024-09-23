@@ -9,7 +9,7 @@ const GastoSchema = new Schema({
         required: true
     },
     fechaPago: {
-        type: Date,
+        type: String,
         required: true
     },
     concepto: {
@@ -29,7 +29,7 @@ const GastoSchema = new Schema({
         required: true
     },
     fechaFactura: {
-        type: Date,
+        type: String,
         required: true
     },
     cliente: {
@@ -46,7 +46,7 @@ const GastoSchema = new Schema({
     },
     idHojaContable: {
         type: String,
-        required: true
+        required: false
     }
 });
 

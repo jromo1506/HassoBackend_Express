@@ -43,11 +43,19 @@ const IngresoSchema = new Schema({
     pedido: {
         type: String,
         required: true
+<<<<<<< HEAD
     },
     idHojaContable: {
         type: String,
         required: true
     }
+=======
+    }
+    // idHojaContable: {
+    //     type: String,
+    //     required: true
+    // }
+>>>>>>> 1e19b2649ef64c48b44e90e850dfbcd7fcc060b8
 });
 
 
