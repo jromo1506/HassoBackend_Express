@@ -17,11 +17,11 @@ const GastoSchema = new Schema({
         required: true
     },
     total: {
-        type: String,
+        type: Number,
         required: true
     },
     importe: {
-        type: String,
+        type: Number,
         required: true
     },
     IVA: {

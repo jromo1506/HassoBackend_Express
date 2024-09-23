@@ -17,15 +17,15 @@ const IngresoSchema = new Schema({
         required: true
     },
     total: {
-        type: String,
+        type: Number,
         required: true
     },
     importe: {
-        type: String,
+        type: Number,
         required: true
     },
     IVA: {
-        type: String,
+        type: Number,
         required: true
     },
     fechaFactura: {
@@ -43,7 +43,7 @@ const IngresoSchema = new Schema({
     pedido: {
         type: String,
         required: true
-    }
+    },
     idHojaContable: {
         type: String,
         required: true
