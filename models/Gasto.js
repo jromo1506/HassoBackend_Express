@@ -18,7 +18,7 @@ const GastoSchema = new Schema({
     },
     total: {
         type: Number,
-        required: true
+        required: false
     },
     importe: {
         type: Number,

@@ -18,7 +18,7 @@ const IngresoSchema = new Schema({
     },
     total: {
         type: Number,
-        required: true
+        required: false
     },
     importe: {
         type: Number,
@@ -46,7 +46,7 @@ const IngresoSchema = new Schema({
     },
     idHojaContable: {
         type: String,
-        required: true
+        required: false
     }
 });
 
