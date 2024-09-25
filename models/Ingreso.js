@@ -46,7 +46,7 @@ const IngresoSchema = new Schema({
     },
     idHojaContable: {
         type: String,
-        required: true
+        required: false
     }
 });
 
