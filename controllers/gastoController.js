@@ -71,7 +71,7 @@ exports.getGastoByHojaContable = async (req, res) => {
         const ingresos = await Gasto.find({ idHojaContable });
 
         if (ingresos.length === 0) {
-            return res.status(404).json({ message: 'No se encontraron ingresos con ese idHojaContable' });
+            return null;
         }
 
         res.json(ingresos);

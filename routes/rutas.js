@@ -76,8 +76,7 @@ router.get('/gasto', gastoController.obtenerGastos);
 router.get('/gasto/:id', gastoController.obtenerGastoPorId);
 router.put('/gasto/:id', gastoController.actualizarGasto);
 router.delete('/gasto/:id', gastoController.eliminarGasto);
-
-
+router.get('/gastosHojas/:id', gastoController.getGastoByHojaContable);
 
 // INGRESOS
 router.post('/ingreso', ingresoController.crearIngreso);
@@ -85,6 +84,7 @@ router.get('/ingreso', ingresoController.obtenerIngresos);
 router.get('/ingreso/:id', ingresoController.obtenerIngresoPorId);
 router.put('/ingreso/:id', ingresoController.actualizarIngreso);
 router.delete('/ingreso/:id', ingresoController.eliminarIngreso);
+router.get('/ingresosHojas/:id', ingresoController.getIngresosByHojaContable);
 
 
 
