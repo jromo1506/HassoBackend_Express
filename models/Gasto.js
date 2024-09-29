@@ -46,7 +46,7 @@ const GastoSchema = new Schema({
     },
     idHojaContable: {
         type: String,
-        required: false
+        required: true
     }
 });
 

@@ -66,8 +66,8 @@ exports.eliminarIngreso = async (req, res) => {
 
 exports.getIngresosByHojaContable = async (req, res) => {
     try {
-        const { idHojaContable } = req.params;
-        const ingresos = await Ingreso.find({ idHojaContable });
+        const { id } = req.params;
+        const ingresos = await Ingreso.find({ idHojaContable: id });
 
         if (ingresos.length === 0) {
             return res.status(404).json({ message: 'No se encontraron ingresos con ese idHojaContable' });
