@@ -1,4 +1,6 @@
 const Gasto = require('../models/Gasto');
+const express = require('express');
+const HojaContable = require('../models/HojaContable');
 
 // Crear un nuevo Gasto
 exports.crearGasto = async (req, res) => {
@@ -62,3 +64,23 @@ exports.eliminarGasto = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+
+exports.getGastoByHojaContable = async (req, res) => {
+    console.log(req.params)
+    try {
+        const { id } = req.params;
+        
+        const ingresos = await Gasto.find({ idHojaContable: id });
+        console.log("DEBUGGG")
+        console.log(ingresos)
+        if (ingresos.length === 0) {
+            return null;
+        }
+
+        res.json(ingresos);
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener los ingresos', error });
+    }
+};
+
