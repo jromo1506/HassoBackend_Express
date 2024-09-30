@@ -11,6 +11,7 @@ const cajaChicaController = require('../controllers/cajaChicaController');
 const hojaContableController = require('../controllers/hojaContableController');
 const ingresoController = require('../controllers/ingresoController');
 const gastoController = require('../controllers/gastoController');
+const proveedorController = require('../controllers/proveedorController');
 
 // EMPLEADO
 router.post('/empleados', empleadoController.createEmpleado);
@@ -86,6 +87,13 @@ router.put('/ingreso/:id', ingresoController.actualizarIngreso);
 router.delete('/ingreso/:id', ingresoController.eliminarIngreso);
 router.get('/ingresosHojas/:id', ingresoController.getIngresosByHojaContable);
 
+
+// PROVEEDORES
+router.post('/proveedor', proveedorController.createProveedor);
+router.get('/proveedor', proveedorController.getProveedores);
+router.get('/proveedor/:id', proveedorController.getProveedorById);
+router.put('/proveedor/:id', proveedorController.updateProveedor);
+router.delete('/proveedor/:id', proveedorController.deleteProveedor);
 
 
 
