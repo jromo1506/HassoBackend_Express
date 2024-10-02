@@ -5,12 +5,13 @@ const Proveedor = require('../models/Proveedor');
 exports.createProveedor = async (req, res) => {
     try {
         const { nombre, idMovimiento } = req.body;
-
-        // Verificar si el movimiento existe
+        console.log(req.body);
+        
+        /* Verificar si el movimiento existe
         const movimiento = await Movimiento.findById(idMovimiento);
         if (!movimiento) {
             return res.status(404).json({ message: 'Movimiento no encontrado' });
-        }
+        }*/
 
         // Crear un nuevo proveedor
         const nuevoProveedor = new Proveedor({
