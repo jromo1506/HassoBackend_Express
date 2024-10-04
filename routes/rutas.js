@@ -41,6 +41,7 @@ router.get('/semanas', semanaController.getSemanas);
 router.get('/semanas/:id', semanaController.getSemanaById);
 router.put('/semanas/:id', semanaController.updateSemana);
 router.delete('/semanas/:id', semanaController.deleteSemana);
+router.post('/semanas/verificar',semanaController.buscarSemana);
 
 // USUARIOS
 router.post('/usuarios', usuarioController.crearUsuario);

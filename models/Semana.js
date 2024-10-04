@@ -3,11 +3,11 @@ const { Schema } = mongoose;
 
 const SemanaSchema = new Schema({
     fechaInicio: {
-        type: Date,
+        type: String,
         required: true
     },
     fechaTermino: {
-        type: Date,
+        type: String,
         required: true
     },
     idHorasTrabajadas: [{

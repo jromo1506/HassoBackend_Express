@@ -13,6 +13,18 @@ const EmpleadoSchema = new Schema({
     sueldoHora: {
         type: Number,
         required: true
+    },
+    banco:{
+        type:String,
+        required:true
+    },
+    cuenta:{
+        type:Number,
+        required:true
+    },
+    tarjeta:{
+        type:Number,
+        required:true
     }
 });
 
