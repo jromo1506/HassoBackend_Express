@@ -7,7 +7,7 @@ const MovimientoSchema = new Schema({
         required: true
     },
     fecha: {
-        type: Date,
+        type: String,
         required: true
     },
     concepto: {
@@ -22,10 +22,10 @@ const MovimientoSchema = new Schema({
         type: Number,
         required: true
     },
-    saldo: {
-        type: Number,
-        required: true
-    },
+    // saldo: {
+    //     type: Number,
+    //     required: true
+    // },
     comprobante: {
         type: String
     },
@@ -33,7 +33,10 @@ const MovimientoSchema = new Schema({
         type: String
     },
     fechaFactura: {
-        type: Date
+        type: String
+    },
+    proveedor:{
+        type: String
     },
     razonSocial: {
         type: String
@@ -49,7 +52,7 @@ const MovimientoSchema = new Schema({
     idCajaChica: {
         type: Schema.Types.ObjectId,
         ref: 'CajaChica',
-        required: true
+        required: false
     }
 });
 
