@@ -4,7 +4,7 @@ const Proveedor = require('../models/Proveedor');
 // Crear un nuevo proveedor
 exports.createProveedor = async (req, res) => {
     try {
-        const { nombre, idMovimiento } = req.body;
+        const { nombre, idMovimiento, rfc } = req.body;
         console.log(req.body);
         
         /* Verificar si el movimiento existe
@@ -16,6 +16,7 @@ exports.createProveedor = async (req, res) => {
         // Crear un nuevo proveedor
         const nuevoProveedor = new Proveedor({
             nombre,
+            rfc,
             idMovimiento
         });
 
