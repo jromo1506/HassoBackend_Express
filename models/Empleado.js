@@ -10,7 +10,7 @@ const EmpleadoSchema = new Schema({
         type: String,
         required: true,
     },
-    sueldoHora: {
+    pago: {
         type: Number,
         required: true
     },
