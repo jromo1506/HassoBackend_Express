@@ -34,6 +34,7 @@ router.get('/horas-trabajadas', horasTrabajadasController.getHorasTrabajadas);
 router.get('/horas-trabajadas/:id', horasTrabajadasController.getHorasTrabajadasById);
 router.put('/horas-trabajadas/:id', horasTrabajadasController.updateHorasTrabajadas);
 router.delete('/horas-trabajadas/:id', horasTrabajadasController.deleteHorasTrabajadas);
+router.get('/horas-trabajadas/horas-semanales/:idSemana',horasTrabajadasController.getHorasDeSemanaPorId);
 
 // SEMANA
 router.post('/semanas', semanaController.createSemana);
@@ -42,6 +43,7 @@ router.get('/semanas/:id', semanaController.getSemanaById);
 router.put('/semanas/:id', semanaController.updateSemana);
 router.delete('/semanas/:id', semanaController.deleteSemana);
 router.post('/semanas/verificar',semanaController.buscarSemana);
+
 
 // USUARIOS
 router.post('/usuarios', usuarioController.crearUsuario);

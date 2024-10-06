@@ -64,6 +64,28 @@ exports.deleteHorasTrabajadas = async (req, res) => {
     }
 };
 
+// Obtener todas las horas de x semana
+
+exports.getHorasDeSemanaPorId = async (req, res) => {
+    const { idSemana } = req.params;  // Obtenemos el idSemana desde los parámetros de la URL
+    console.log(idSemana);
+    try {
+        // Realizamos la búsqueda en la base de datos donde el idSemana coincida
+        const horas = await HorasTrabajadas.find({ idSemana });
+
+        // Verificar si se encontraron resultados
+        if (!horas.length) {
+            return res.status(404).json({ message: 'No se encontraron horas trabajadas para esta semana' });
+        }
+
+        // Devolvemos las horas encontradas
+        res.json(horas);
+    } catch (error) {
+        console.error('Error al obtener las horas trabajadas:', error);
+        res.status(500).json({ message: 'Error del servidor' });
+    }
+};
+
 
 
 
