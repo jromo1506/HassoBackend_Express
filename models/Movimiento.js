@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const {Schema} = mongoose;
+const { Schema } = mongoose;
 
 const MovimientoSchema = new Schema({
     obra: {
@@ -22,10 +22,10 @@ const MovimientoSchema = new Schema({
         type: Number,
         required: true
     },
-    // saldo: {
-    //     type: Number,
-    //     required: true
-    // },
+    saldo: {
+        type: Number,
+        required: true
+    },
     comprobante: {
         type: String
     },
@@ -35,7 +35,7 @@ const MovimientoSchema = new Schema({
     fechaFactura: {
         type: String
     },
-    proveedor:{
+    proveedor: {
         type: String
     },
     razonSocial: {
@@ -56,4 +56,4 @@ const MovimientoSchema = new Schema({
     }
 });
 
-module.exports = mongoose.model('Movimiento',MovimientoSchema);
+module.exports = mongoose.model('Movimiento', MovimientoSchema);
