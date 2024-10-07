@@ -52,7 +52,7 @@ const MovimientoSchema = new Schema({
     idCajaChica: {
         type: Schema.Types.ObjectId,
         ref: 'CajaChica',
-        required: false
+        required: true
     }
 });
 

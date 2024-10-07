@@ -15,6 +15,7 @@ exports.crearMovimiento = async (req, res) => {
 
 // Obtener todos los movimientos
 exports.obtenerMovimientos = async (req, res) => {
+    console.log(req.params,"obtenermovs")
     try {
         const movimientos = await Movimiento.find().populate('idCajaChica');
         res.status(200).json(movimientos);
@@ -26,7 +27,7 @@ exports.obtenerMovimientos = async (req, res) => {
 // Obtener un movimiento por ID
 exports.obtenerMovimientoPorId = async (req, res) => {
     try {
-        const movimiento = await Movimiento.findById(req.params.id).populate('idCajaChica');
+        const movimiento = await Movimiento.find({ idCajaChica: req.params.id }).populate('idCajaChica');
         if (!movimiento) {
             return res.status(404).json({ message: 'Movimiento no encontrado' });
         }

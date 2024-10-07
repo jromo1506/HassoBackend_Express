@@ -21,22 +21,23 @@ const HorasTrabajadasSchema = new Schema({
         type: String,
         required: true
     },
-    horasRegulares: {
-        type: Number,
+    nombreEmpleado:{
+        type: String,
         required: true
     },
-    horasExtras: {
-        type: Boolean,
-        required: true
-    },
-    pagoHorasRegulares: {
-        type: Number,
-        required: true
+    horasTrabajadas:{
+        type:Number,
+        required:true
     },
     fecha: {
         type: Date,
         required: true
-    }
+    },
+    diaSemana:{
+        type:String,
+        required:true
+    },
+
 });
 
 

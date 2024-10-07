@@ -6,6 +6,14 @@ const router = express.Router();
 // Crear una nueva semana
 exports.createSemana = async (req, res) => {
     try {
+        const { fechaInicio } = req.body;
+
+        // Verificar si ya existe una semana con la misma fecha de inicio
+        const existingSemana = await Semana.findOne({ fechaInicio });
+        if (existingSemana) {
+            return res.status(400).json({ error: 'La fecha de inicio ya existe.' });
+        }
+
         const semana = new Semana(req.body);
         await semana.save();
         res.status(201).json(semana);
@@ -62,3 +70,23 @@ exports.deleteSemana = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
+
+exports.buscarSemana = async (req, res) => {
+    try {
+        const { fechaInicio } = req.body; // Suponiendo que envías la fechaInicio desde el body de la solicitud
+        
+        // Convertir la fecha enviada a un objeto Date
+        const fechaInicioObj = new Date(fechaInicio);
+        
+        // Buscar si existe una semana con la misma fecha de inicio
+        const semanaExistente = await Semana.findOne({ fechaInicio: fechaInicioObj });
+        
+        if (semanaExistente) {
+            res.status(200).json({ message: 'La fecha de inicio ya existe.', semana: semanaExistente });
+        } else {
+            res.status(404).json({ message: 'La fecha de inicio no existe.' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: 'Error al verificar la fecha de inicio.' });
+    }
+};  
