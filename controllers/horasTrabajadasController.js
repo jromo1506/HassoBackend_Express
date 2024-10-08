@@ -87,5 +87,23 @@ exports.getHorasDeSemanaPorId = async (req, res) => {
 };
 
 
+exports.getHorasBySemanaAndEmpleado = async (req, res) => {
+    try {
+        const { idSemana, idEmpleado } = req.params;
+        
+        // Buscar todas las horas que coincidan con idSemana e idEmpleado
+        const horasTrabajadas = await HorasTrabajadas.find({ idSemana, idEmpleado });
+
+        if (horasTrabajadas.length === 0) {
+             return res.status(200).json([]);
+        }
+
+        res.status(200).json(horasTrabajadas);
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener las horas trabajadas', error });
+    }
+};
+
+
 
 

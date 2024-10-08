@@ -12,6 +12,7 @@ const hojaContableController = require('../controllers/hojaContableController');
 const ingresoController = require('../controllers/ingresoController');
 const gastoController = require('../controllers/gastoController');
 const proveedorController = require('../controllers/proveedorController');
+const nominaController = require('../controllers/nominaController');
 
 // EMPLEADO
 router.post('/empleados', empleadoController.createEmpleado);
@@ -35,7 +36,7 @@ router.get('/horas-trabajadas/:id', horasTrabajadasController.getHorasTrabajadas
 router.put('/horas-trabajadas/:id', horasTrabajadasController.updateHorasTrabajadas);
 router.delete('/horas-trabajadas/:id', horasTrabajadasController.deleteHorasTrabajadas);
 router.get('/horas-trabajadas/horas-semanales/:idSemana',horasTrabajadasController.getHorasDeSemanaPorId);
-
+router.get('/horas-trabajadas/:idSemana/:idEmpleado', horasTrabajadasController.getHorasBySemanaAndEmpleado);
 // SEMANA
 router.post('/semanas', semanaController.createSemana);
 router.get('/semanas', semanaController.getSemanas);
@@ -97,6 +98,15 @@ router.get('/proveedor', proveedorController.getProveedores);
 router.get('/proveedor/:id', proveedorController.getProveedorById);
 router.put('/proveedor/:id', proveedorController.updateProveedor);
 router.delete('/proveedor/:id', proveedorController.deleteProveedor);
+
+
+
+router.post('/nominas', nominaController.createNomina);
+router.get('/nominas', nominaController.getNominas);
+router.get('/nominas/:idSemana', nominaController.getNominasBySemana);
+router.get('/nominas/:idSemana/:idEmpleado', nominaController.getNominaById);
+router.put('/nominas/:idSemana/:idEmpleado', nominaController.updateNomina);
+router.delete('/nominas/:idSemana/:idEmpleado', nominaController.deleteNomina);
 
 
 

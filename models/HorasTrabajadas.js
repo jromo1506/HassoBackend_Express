@@ -31,12 +31,16 @@ const HorasTrabajadasSchema = new Schema({
     },
     fecha: {
         type: Date,
-        required: true
+        required: false
     },
     diaSemana:{
         type:String,
         required:true
     },
+    sonHorasExtra:{
+        type:Boolean,
+        required:true
+    }
 
 });
 
