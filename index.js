@@ -16,6 +16,6 @@ app.use(express.json());
 app.use('/Hasso', require('./routes/rutas'));
 
 // Arrancar el servidor
-app.listen(5000, () => {
-    console.log('Servidor corriendo en el puerto 5000');
+app.listen(4000, () => {
+    console.log('Servidor corriendo en el puerto 4000');
 });
