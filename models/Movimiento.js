@@ -24,7 +24,7 @@ const MovimientoSchema = new Schema({
     },
     saldo: {
         type: Number,
-        required: true
+        required: false
     },
     comprobante: {
         type: String
@@ -39,10 +39,13 @@ const MovimientoSchema = new Schema({
         type: String
     },
     razonSocial: {
-        type: String
+        type: String,
+        required: false
     },
     rfc: {
-        type: String
+        type: String,
+        required: false
+
     },
     formaDePago: {
         type: String,

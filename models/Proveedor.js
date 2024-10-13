@@ -8,7 +8,7 @@ const ProveedorSchema = new Schema({
     },
     rfc: {
         type: String,
-        required: true
+        required: false
     },
     idMovimiento: {
         type: Schema.Types.ObjectId,
