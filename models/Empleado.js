@@ -12,7 +12,7 @@ const EmpleadoSchema = new Schema({
     },
     pago: {
         type: Number,
-        required: true
+        required: true  
     },
     banco:{
         type:String,
