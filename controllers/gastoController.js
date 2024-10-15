@@ -27,6 +27,7 @@ exports.obtenerGastos = async (req, res) => {
 exports.obtenerGastoPorId = async (req, res) => {
     try {
         const gasto = await Gasto.findById(req.params.id);
+        console.log(gasto,"gasto----------------------------------------")
         if (!gasto) {
             return res.status(404).json({ error: 'Gasto no encontrado' });
         }
@@ -72,10 +73,22 @@ exports.getGastoByHojaContable = async (req, res) => {
         const { id } = req.params;
         
         const ingresos = await Gasto.find({ idHojaContable: id });
-        console.log("DEBUGGG")
         console.log(ingresos)
         if (ingresos.length === 0) {
-            return null;
+            const defaultGasto = {
+                obra: "",
+                fechaPago: "",
+                concepto: "",
+                total: 0,
+                importe: 0,
+                IVA: 0,
+                fechaFactura: "",
+                cliente: "",
+                RFC: "",
+                pedido: "",
+                idHojaContable: ""
+            };
+            return res.json([defaultGasto]);
         }
 
         res.json(ingresos);
