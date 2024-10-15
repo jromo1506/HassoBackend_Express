@@ -50,52 +50,57 @@ const NominaSchema = new Schema({
         default:48
     },
 
-
-   sobreSueldo: {
+    sobreSueldo: {
         type: Number,
-        
-        required: false
+        required: false,
+        default: 0
     },
     finiquito: {
         type: Number,
-        
-        required: false
-    },
-
-    deben: {
-        type: Number,
-        
-        required: false
-    },
-    prestamo:{
-        type: Number,
-        
-        required: false
-    },
-    abonan:{
-        type: Number,
-        
-        required: false
-    },
-    pension:{
-        type: Number,
-        
-        required: false
+        required: false,
+        default: 0
     },
     totalNomina: {
         type: Number,
-        
-        required: false
+        required: false,
+        default: 0
     },
-
-    nominaFiscal:{
-        type:Number,
-        required: false
+    deben: {
+        type: Number,
+        required: false,
+        default: 0
     },
-    dispEfectivo:{
-        type:Number,
-        required:false
+    prestamo: {
+        type: Number,
+        required: false,
+        default: 0
+    },
+    abonan: {
+        type: Number,
+        required: false,
+        default: 0
+    },
+    pension: {
+        type: Number,
+        required: false,
+        default: 0
+    },
+    lesDoy: {
+        type: Number,
+        required: false,
+        default: 0
+    },
+    nominaFiscal: {
+        type: Number,
+        required: false,
+        default: 0
+    },
+    dispEfectivo: {
+        type: Number,
+        required: false,
+        default: 0
     }
+    
 
 
 });

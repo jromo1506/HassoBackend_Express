@@ -70,7 +70,20 @@ exports.getIngresosByHojaContable = async (req, res) => {
         const ingresos = await Ingreso.find({ idHojaContable: id });
 
         if (ingresos.length === 0) {
-            return res.status(404).json({ message: 'No se encontraron ingresos con ese idHojaContable' });
+            const defaultIngreso = {
+                obra: "",
+                fechaPago: "",
+                concepto: "",
+                total: 0,
+                importe: 0,
+                IVA: 0,
+                fechaFactura: "",
+                cliente: "",
+                RFC: "",
+                pedido: "",
+                idHojaContable: ""
+            };
+            return res.json([defaultIngreso]);
         }
 
         res.json(ingresos);

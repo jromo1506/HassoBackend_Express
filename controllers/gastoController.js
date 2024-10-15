@@ -75,9 +75,20 @@ exports.getGastoByHojaContable = async (req, res) => {
         const ingresos = await Gasto.find({ idHojaContable: id });
         console.log(ingresos)
         if (ingresos.length === 0) {
-            console.log("RETORNANDO NULL-----------------------------------",ingresos)
-            return res.status(404).json({ error: 'Hoja singastos' });
-            return null;
+            const defaultGasto = {
+                obra: "",
+                fechaPago: "",
+                concepto: "",
+                total: 0,
+                importe: 0,
+                IVA: 0,
+                fechaFactura: "",
+                cliente: "",
+                RFC: "",
+                pedido: "",
+                idHojaContable: ""
+            };
+            return res.json([defaultGasto]);
         }
 
         res.json(ingresos);

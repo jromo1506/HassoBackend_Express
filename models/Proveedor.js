@@ -10,6 +10,7 @@ const ProveedorSchema = new Schema({
         type: String,
         required: true
     },
+    
     idMovimiento: {
         type: Schema.Types.ObjectId,
         ref: 'Movimiento',
