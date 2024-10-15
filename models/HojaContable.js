@@ -14,10 +14,15 @@ const HojaContableSchema = new Schema({
         required: true
     }*/
 
-        fechaHoja: {
-            type: Date,
-            required: true
-        }
+    fechaHoja: {
+        type: Date,
+        required: true
+    },
+    idUsuario: {
+        type: Schema.Types.ObjectId,
+        ref: 'Usuario',
+        required: false
+    }
 });
 
 
