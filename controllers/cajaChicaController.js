@@ -63,3 +63,26 @@ exports.eliminarCajaChica = async (req, res) => {
         res.status(500).json({ message: 'Error al eliminar la caja chica', error });
     }
 };
+
+exports.getCajasChicasByUsuario = async (req, res) => {
+    try {
+        const { idUsuario } = req.params; // Obtener el idUsuario desde los parámetros de la solicitud
+
+        // Buscar las cajas chicas donde idUsuario coincida
+        const cajasChicas = await CajaChica.find({ idUsuario }).populate('idUsuario');
+
+        if (!cajasChicas.length) {
+            const placeholderCajaChica = {
+                nombreCajaChica: 'No se encontraron hojas para este usuario', // Valores predeterminados para el placeholder
+                idUsuario: '', // Usamos el idUsuario que vino en la solicitud
+            };
+            return res.status(200).json([placeholderCajaChica]);
+        }
+
+        // Responder con las cajas chicas encontradas
+        res.status(200).json(cajasChicas);
+    } catch (error) {
+        console.error('Error al obtener cajas chicas:', error);
+        res.status(500).json({ message: 'Error al obtener las cajas chicas' });
+    }
+};

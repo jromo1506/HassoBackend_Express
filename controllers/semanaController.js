@@ -90,3 +90,24 @@ exports.buscarSemana = async (req, res) => {
         res.status(500).json({ error: 'Error al verificar la fecha de inicio.' });
     }
 };  
+
+exports.getSemanasByUsuario = async (req, res) => {
+    try {
+        const { idUsuario } = req.params; // Obtener el idUsuario desde los parámetros de la solicitud
+
+        // Buscar las semanas donde idUsuario coincida
+        const semanas = await Semana.find({ idUsuario })
+            .populate('idUsuario') // Popula los detalles del usuario
+            .populate('idHorasTrabajadas'); // Popula los detalles de las horas trabajadas
+
+        if (!semanas.length) {
+            return res.status(404).json({ message: 'No se encontraron semanas para este usuario' });
+        }
+
+        // Responder con las semanas encontradas
+        res.status(200).json(semanas);
+    } catch (error) {
+        console.error('Error al obtener semanas:', error);
+        res.status(500).json({ message: 'Error al obtener las semanas' });
+    }
+};

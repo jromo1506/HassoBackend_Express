@@ -60,6 +60,7 @@ router.get('/cajas-chicas', cajaChicaController.obtenerCajasChicas);
 router.get('/cajas-chicas/:id', cajaChicaController.obtenerCajaChicaPorId);
 router.put('/cajas-chicas/:id', cajaChicaController.actualizarCajaChica);
 router.delete('/cajas-chicas/:id', cajaChicaController.eliminarCajaChica);
+router.get('/cajas-chicas/usuario/:idUsuario',cajaChicaController.getCajasChicasByUsuario);
 
 // MOVIMEINTO
 router.post('/movimientos', movimientoController.crearMovimiento);
@@ -74,6 +75,7 @@ router.get('/hojaContable', hojaContableController.obtenerHojasContables);
 router.get('/hojaContable/:id', hojaContableController.obtenerHojaContablePorId);
 router.put('/hojaContable/:id', hojaContableController.actualizarHojaContable);
 router.delete('/hojaContable/:id', hojaContableController.eliminarHojaContable);
+router.get('/hojaContable/usuario/:idUsuario',hojaContableController.getHojasContablesByUsuario);
 
 // GASTO CONTROLLER
 router.post('/gasto', gastoController.crearGasto);

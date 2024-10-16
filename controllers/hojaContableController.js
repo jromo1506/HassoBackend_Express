@@ -64,3 +64,28 @@ exports.eliminarHojaContable = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+
+exports.getHojasContablesByUsuario = async (req, res) => {
+    try {
+        const { idUsuario } = req.params; // Obtener el idUsuario desde los parámetros de la solicitud
+
+        // Buscar las hojas contables donde idUsuario coincida (puede ser null o undefined si no es requerido)
+        const hojasContables = await HojaContable.find({ idUsuario }).populate('idUsuario');
+
+        if (!hojasContables.length) {
+            const placeholderHojaContable = {
+                nombreHoja: '', // Valores predeterminados para el placeholder
+                fechaHoja: Date(), // Fecha actual como valor de placeholder
+                idUsuario: idUsuario || null // Usar el idUsuario que vino en la solicitud, o null si no es requerido
+            };
+            return res.status(200).json([placeholderHojaContable]);
+        }
+
+        // Responder con las hojas contables encontradas
+        res.status(200).json(hojasContables);
+    } catch (error) {
+        console.error('Error al obtener hojas contables:', error);
+        res.status(500).json({ message: 'Error al obtener las hojas contables' });
+    }
+};
