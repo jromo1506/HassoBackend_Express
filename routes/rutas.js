@@ -13,6 +13,8 @@ const ingresoController = require('../controllers/ingresoController');
 const gastoController = require('../controllers/gastoController');
 const proveedorController = require('../controllers/proveedorController');
 const nominaController = require('../controllers/nominaController');
+const clienteController = require('../controllers/clienteController');
+const solicitudController = require('../controllers/solicitudController');
 
 // EMPLEADO
 router.post('/empleados', empleadoController.createEmpleado);
@@ -109,6 +111,21 @@ router.get('/nominas/:idSemana', nominaController.getNominasBySemana);
 router.get('/nominas/:idSemana/:idEmpleado', nominaController.getNominaById);
 router.put('/nominas/:idSemana/:idEmpleado', nominaController.updateNomina);
 router.delete('/nominas/:idSemana/:idEmpleado', nominaController.deleteNomina);
+
+
+router.post('/cliente', clienteController.crearCliente);
+router.get('/cliente', clienteController.obtenerClientes);
+router.get('/cliente/:id', clienteController.obtenerClientePorId);
+router.put('/cliente/:id', clienteController.actualizarCliente);
+router.delete('/cliente/:id', clienteController.eliminarCliente);
+
+// SOLICITUD
+router.post('/solicitud',solicitudController.createSolicitud);
+router.get('/solicitud', solicitudController.getSolicitudes);
+router.get('/solicitud/:id', solicitudController.getSolicitudById);
+router.put('/solicitud/:id', solicitudController.updateSolicitud);
+router.delete('/solicitud/:id', solicitudController.deleteSolicitud);
+
 
 
 
