@@ -27,27 +27,33 @@ const MovimientoSchema = new Schema({
     //     required: true
     // },
     comprobante: {
-        type: String
+        type: String,
+        required: false
     },
     numeroFactura: {
-        type: String
+        type: String,
+        required: false
     },
     fechaFactura: {
-        type: String
+        type: String,
+        required: false
     },
     proveedor:{
-        type: String
+        type: String,
+        required: false
     },
     razonSocial: {
-        type: String
+        type: String,
+        required: false
     },
     rfc: {
-        type: String
+        type: String,
+        required: false
     },
     formaDePago: {
         type: String,
-        enum: ['Efectivo', 'Transferencia', 'Cheque', 'Tarjeta'], // Ejemplo de formas de pago, ajusta según necesites
-        required: true
+        enum: ['Efectivo', 'Transferencia', 'Cheque', 'Tarjeta',''], // Ejemplo de formas de pago, ajusta según necesites
+        required: false
     },
     idCajaChica: {
         type: Schema.Types.ObjectId,
@@ -57,3 +63,5 @@ const MovimientoSchema = new Schema({
 });
 
 module.exports = mongoose.model('Movimiento',MovimientoSchema);
+
+

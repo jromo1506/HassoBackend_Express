@@ -7,6 +7,10 @@ const CajaChicaSchema = new Schema({
         type: String,
         required: true
     },
+    fechaHoja: {
+        type: Date,
+        required: true
+    },
     idUsuario: {
         type: Schema.Types.ObjectId,
         ref: 'Usuario',
