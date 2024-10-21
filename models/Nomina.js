@@ -99,6 +99,11 @@ const NominaSchema = new Schema({
         type: Number,
         required: false,
         default: 0
+    },
+    calculado:{
+        type:Boolean,
+        required:false,
+        default:false
     }
     
 

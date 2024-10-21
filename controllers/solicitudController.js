@@ -3,11 +3,8 @@ const Solicitud = require('../models/Solicitud');
 // Crear una nueva solicitud
 exports.createSolicitud = async (req, res) => {
     try {
-        const { idUsuario, idCajachica } = req.body;
-        const newSolicitud = new Solicitud({
-            idUsuario,
-            idCajachica
-        });
+        console.log(req.body,"SOLICITUD");
+        const newSolicitud = new Solicitud(req.body);
         const savedSolicitud = await newSolicitud.save();
         res.status(201).json(savedSolicitud);
     } catch (error) {

@@ -22,6 +22,22 @@ exports.createSemana = async (req, res) => {
     }
 };
 
+
+
+
+// Crear una nueva semana
+exports.createSemanaDebug = async (req, res) => {
+    try {
+        const { fechaInicio } = req.body;
+    
+        const semana = new Semana(req.body);
+        await semana.save();
+        res.status(201).json(semana);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
 // Obtener todas las semanas
 exports.getSemanas = async (req, res) => {
     try {
