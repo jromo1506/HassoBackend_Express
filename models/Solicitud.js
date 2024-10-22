@@ -7,9 +7,9 @@ const SolicitudSchema = new Schema({
         required: true
     },
     
-    idCajachica: {
+    idCajaChica: {
         type: String,
-        required: false
+        required: true
     },
     idSemana:{
         type: String,
