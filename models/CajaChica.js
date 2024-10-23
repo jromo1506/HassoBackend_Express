@@ -15,6 +15,15 @@ const CajaChicaSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Usuario',
         required: true
+    },
+    mes:{
+        type:String,
+        required:true
+    },
+    anio:{
+        type:Number,
+        required:true
     }
+
 });
 module.exports = mongoose.model('CajaChica',CajaChicaSchema);

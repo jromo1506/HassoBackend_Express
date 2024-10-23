@@ -104,3 +104,44 @@ exports.validarRfcCurpTarjCuenEmpleado = async(req,res) =>{
         });
     }
 }
+
+
+exports.buscarEmpleado = async(req,res) =>{
+
+    try {
+        const { searchQuery } = req.query;
+        console.log(searchQuery,"Searh kuery");
+        if (!searchQuery) {
+            return res.status(400).json({
+                message: 'Debe proporcionar una cadena de búsqueda'
+            });
+        }
+
+        // Crear expresiones regulares para cada campo que buscaremos
+        const regex = new RegExp(searchQuery, 'i'); // 'i' hace que sea insensible a mayúsculas y minúsculas
+
+        // Buscar empleados que coincidan en nombre, apePat o apeMat
+        const empleados = await Empleado.find({
+            $or: [
+                { nombre: regex },
+                { apePat: regex },
+                { apeMat: regex }
+            ]
+        }).sort({ nombre: 1, apePat: 1, apeMat: 1 }); // Ordenar alfabéticamente
+
+        // Enviar resultados
+        res.status(200).json({
+            message: `Se encontraron ${empleados.length} empleados que coinciden con la búsqueda`,
+            empleados
+        });
+    } 
+    catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: 'Error al buscar empleados',
+            error: error.message
+        });
+    }
+}
+
+
