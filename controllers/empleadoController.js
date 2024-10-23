@@ -67,7 +67,7 @@ exports.deleteEmpleado = async (req, res) => {
 };
 
 
-exports.validarRfcCurpTarjCuenEmpleado = async(req,res) =>{
+exports.validarRfcCurpTarjCuenEmpleado = async (req, res) => {
     try {
         const { rfc, curp, tarjeta, cuenta } = req.body;
 
@@ -82,9 +82,26 @@ exports.validarRfcCurpTarjCuenEmpleado = async(req,res) =>{
         });
 
         if (empleadoExistente) {
-            return res.status(400).json({
-                message: 'Ya existe un empleado con el mismo RFC, CURP, Tarjeta o Cuenta.'
-            });
+            let messages = [];
+
+            // Construir mensajes específicos para cada campo duplicado
+            if (empleadoExistente.rfc === rfc) {
+                messages.push('El RFC ingresado ya existe.');
+            }
+            if (empleadoExistente.curp === curp) {
+                messages.push('La CURP ingresada ya existe.');
+            }
+            if (empleadoExistente.tarjeta === tarjeta) {
+                messages.push('La tarjeta ingresada ya existe.');
+            }
+            if (empleadoExistente.cuenta === cuenta) {
+                messages.push('La cuenta ingresada ya existe.');
+            }
+
+            // Unir todos los mensajes en una sola cadena
+            const message = messages.join(' ');
+
+            return res.status(400).json({ message });
         }
 
         // Crear un nuevo empleado si no se encontraron duplicados
@@ -95,15 +112,17 @@ exports.validarRfcCurpTarjCuenEmpleado = async(req,res) =>{
             message: 'Empleado creado exitosamente',
             empleado: nuevoEmpleado
         });
-    } 
-    catch (error) {
+    } catch (error) {
         console.error(error);
         res.status(500).json({
             message: 'Error al crear el empleado',
             error: error.message
         });
     }
-}
+};
+
+
+
 
 
 exports.buscarEmpleado = async(req,res) =>{
