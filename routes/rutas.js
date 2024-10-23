@@ -22,6 +22,7 @@ router.get('/empleados', empleadoController.getEmpleados);
 router.get('/empleados/:id', empleadoController.getEmpleadoById);
 router.put('/empleados/:id', empleadoController.updateEmpleado);
 router.delete('/empleados/:id', empleadoController.deleteEmpleado);
+router.post('/empleados/validarRepetidos',empleadoController.validarRfcCurpTarjCuenEmpleado);
 
 // PROYECTO
 router.post('/proyectos', proyectoController.createProyecto);
