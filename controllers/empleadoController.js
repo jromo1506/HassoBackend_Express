@@ -65,3 +65,42 @@ exports.deleteEmpleado = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
+
+
+exports.validarRfcCurpTarjCuenEmpleado = async(req,res) =>{
+    try {
+        const { rfc, curp, tarjeta, cuenta } = req.body;
+
+        // Verificar si ya existe un empleado con el mismo RFC, CURP, Tarjeta o Cuenta
+        const empleadoExistente = await Empleado.findOne({
+            $or: [
+                { rfc: rfc },
+                { curp: curp },
+                { tarjeta: tarjeta },
+                { cuenta: cuenta }
+            ]
+        });
+
+        if (empleadoExistente) {
+            return res.status(400).json({
+                message: 'Ya existe un empleado con el mismo RFC, CURP, Tarjeta o Cuenta.'
+            });
+        }
+
+        // Crear un nuevo empleado si no se encontraron duplicados
+        const nuevoEmpleado = new Empleado(req.body);
+        await nuevoEmpleado.save();
+
+        res.status(201).json({
+            message: 'Empleado creado exitosamente',
+            empleado: nuevoEmpleado
+        });
+    } 
+    catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: 'Error al crear el empleado',
+            error: error.message
+        });
+    }
+}

@@ -6,6 +6,14 @@ const EmpleadoSchema = new Schema({
         type: String,
         required: true
     },
+    apePat:{
+        type:String,
+        required:true
+    },
+    apeMat:{
+        type:String,
+        required:true
+    },
     rfc: {
         type: String,
         required: true,
@@ -27,24 +35,27 @@ const EmpleadoSchema = new Schema({
         required:true
     },
 
-    // Se obtiene del prestamo,sele resta el abono se coloca en la nomina de la sig semana y se vacia
     deuda:{
         type:Number,
         required:false,
         default:0,
     },
-    // Es solo el calculo provisional, se convierte a deuda una vez se cree la sig semana
-    // proxDeuda:{
-    //     type:Number,
-    //     required:false,
-    //     default:0,
-    // },s
-
     abono:{
         type:Number,
         required:false,
         default:0
+    },
+
+    curp:{
+        type:String,
+        required:true
+    },
+    puesto:{
+        type:String,
+        required:true
     }
+
+
 });
 
 
