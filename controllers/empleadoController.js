@@ -110,7 +110,7 @@ exports.buscarEmpleado = async(req,res) =>{
 
     try {
         const { searchQuery } = req.query;
-        console.log(searchQuery,"Searh kuery");
+        // console.log(searchQuery,"Searh kuery");
         if (!searchQuery) {
             return res.status(400).json({
                 message: 'Debe proporcionar una cadena de búsqueda'
