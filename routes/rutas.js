@@ -41,6 +41,8 @@ router.put('/horas-trabajadas/:id', horasTrabajadasController.updateHorasTrabaja
 router.delete('/horas-trabajadas/:id', horasTrabajadasController.deleteHorasTrabajadas);
 router.get('/horas-trabajadas/horas-semanales/:idSemana',horasTrabajadasController.getHorasDeSemanaPorId);
 router.get('/horas-trabajadas/:idSemana/:idEmpleado', horasTrabajadasController.getHorasBySemanaAndEmpleado);
+
+
 // SEMANA
 router.post('/semanas', semanaController.createSemanaDebug);
 router.get('/semanas', semanaController.getSemanas);
@@ -65,6 +67,8 @@ router.get('/cajas-chicas/:id', cajaChicaController.obtenerCajaChicaPorId);
 router.put('/cajas-chicas/:id', cajaChicaController.actualizarCajaChica);
 router.delete('/cajas-chicas/:id', cajaChicaController.eliminarCajaChica);
 router.get('/cajas-chicas/usuario/:idUsuario',cajaChicaController.getCajasChicasByUsuario);
+router.post('cajas-chicas/buscarHojaContable',cajaChicaController.buscarHojaContable);
+
 
 // MOVIMEINTO
 router.post('/movimientos', movimientoController.crearMovimiento);
@@ -80,6 +84,7 @@ router.get('/hojaContable/:id', hojaContableController.obtenerHojaContablePorId)
 router.put('/hojaContable/:id', hojaContableController.actualizarHojaContable);
 router.delete('/hojaContable/:id', hojaContableController.eliminarHojaContable);
 router.get('/hojaContable/usuario/:idUsuario',hojaContableController.getHojasContablesByUsuario);
+router.get('/hojaContable/checarExistencia',hojaContableController.verificarHojaContableActual);
 
 // GASTO CONTROLLER
 router.post('/gasto', gastoController.crearGasto);
@@ -106,7 +111,7 @@ router.put('/proveedor/:id', proveedorController.updateProveedor);
 router.delete('/proveedor/:id', proveedorController.deleteProveedor);
 
 
-
+// NOMINAS
 router.post('/nominas', nominaController.createNomina);
 router.get('/nominas', nominaController.getNominas);
 router.get('/nominas/:idSemana', nominaController.getNominasBySemana);
@@ -114,7 +119,7 @@ router.get('/nominas/:idSemana/:idEmpleado', nominaController.getNominaById);
 router.put('/nominas/:idSemana/:idEmpleado', nominaController.updateNomina);
 router.delete('/nominas/:idSemana/:idEmpleado', nominaController.deleteNomina);
 
-
+// CLIENTE
 router.post('/cliente', clienteController.crearCliente);
 router.get('/cliente', clienteController.obtenerClientes);
 router.get('/cliente/:id', clienteController.obtenerClientePorId);

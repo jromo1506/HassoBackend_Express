@@ -6,6 +6,10 @@ const ProyectoSchema = new Schema({
         type: String,
         required: true
     },
+    planta:{
+        type:String,
+        required:true
+    },
     clave:{
         type:String,
         required:false

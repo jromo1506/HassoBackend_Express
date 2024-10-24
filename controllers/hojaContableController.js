@@ -89,3 +89,37 @@ exports.getHojasContablesByUsuario = async (req, res) => {
         res.status(500).json({ message: 'Error al obtener las hojas contables' });
     }
 };
+
+
+// Checa si ya hay una hoja Contable con el mismo mes y año
+exports.verificarHojaContableActual = async (req, res) => {
+    try {
+        // Obtener el mes y año actual
+        const fechaActual = new Date();
+        const mesActual = fechaActual.toLocaleString('default', { month: 'long' });  // Obtiene el mes como string (Ej: 'October')
+        const anioActual = fechaActual.getFullYear();  // Obtiene el año (Ej: 2024)
+
+        // Buscar si existe una hoja contable con el mes y año actual
+        const hojaContableExistente = await HojaContable.findOne({ mes: mesActual, anio: anioActual });
+
+        if (hojaContableExistente) {
+            return res.status(200).json({
+                existe: true,
+                message: 'Ya existe una hoja contable para el mes y año actual.',
+                hojaContable: hojaContableExistente
+            });
+        } else {
+            return res.status(200).json({
+                existe: false,
+                message: 'No existe ninguna hoja contable para el mes y año actual.'
+            });
+        }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: 'Error al verificar la existencia de la hoja contable.'
+        });
+    }
+};
+
+

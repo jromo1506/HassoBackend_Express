@@ -1,4 +1,5 @@
 const CajaChica = require('../models/CajaChica');
+const HojaContable = require('../models/HojaContable');
 const express = require('express');
 const router = express.Router();
 
@@ -86,3 +87,28 @@ exports.getCajasChicasByUsuario = async (req, res) => {
         res.status(500).json({ message: 'Error al obtener las cajas chicas' });
     }
 };
+
+
+// Busca si existe una hoja contable con los mismos mes y anio que la caja chica para exportar los gastos
+
+exports.buscarHojaContable = async (req, res) => {
+    try {
+        const { mes, anio } = req.body;
+
+        // Verificar si existe una hoja de contable con el mismo mes y año
+        const hojaContable = await HojaContable.findOne({ mes: mes, anio: anio });
+
+        if (!hojaContable) {
+            return res.status(404).json({ message: 'No se encontró ninguna Hoja Contable para este mes y año' });
+        }
+
+        return res.status(200).json({ hojaContable });
+    } 
+    catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Error al buscar la Hoja Contable' });
+    }
+};
+
+
+
