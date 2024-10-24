@@ -64,4 +64,3 @@ const MovimientoSchema = new Schema({
 
 module.exports = mongoose.model('Movimiento',MovimientoSchema);
 
-
