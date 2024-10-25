@@ -87,7 +87,7 @@ router.get('/hojaContable/:id', hojaContableController.obtenerHojaContablePorId)
 router.put('/hojaContable/:id', hojaContableController.actualizarHojaContable);
 router.delete('/hojaContable/:id', hojaContableController.eliminarHojaContable);
 router.get('/hojaContable/usuario/:idUsuario',hojaContableController.getHojasContablesByUsuario);
-router.get('/hojaContable/checarExistencia',hojaContableController.verificarHojaContableActual);
+router.post('/hojaContable/checarExistencia',hojaContableController.verificarHojaContableActual);
 
 // GASTO CONTROLLER
 router.post('/gasto', gastoController.crearGasto);
