@@ -62,3 +62,69 @@ exports.eliminarMovimiento = async (req, res) => {
         res.status(500).json({ message: 'Error al eliminar el movimiento', error });
     }
 };
+
+exports.crearMovimientoConVerificacion = async (req, res) => {
+    const { numeroFactura, rfc, ...restoDeDatos } = req.body;
+
+    try {
+        // Verificar si ya existe un movimiento con el mismo numeroFactura o RFC
+        const duplicado = await Movimiento.findOne({
+            $or: [
+                { numeroFactura: numeroFactura },
+                { rfc: rfc }
+            ]
+        });
+
+        if (duplicado) {
+            return res.status(400).json({
+                mensaje: 'Ya existe un movimiento con el mismo número de factura o RFC.'
+            });
+        }
+
+        // Crear y guardar el nuevo movimiento
+        const nuevoMovimiento = new Movimiento({
+            numeroFactura,
+            rfc,
+            ...restoDeDatos
+        });
+
+        await nuevoMovimiento.save();
+        res.status(201).json(nuevoMovimiento);
+    } catch (error) {
+        res.status(500).json({
+            mensaje: 'Error al crear el movimiento.',
+            error: error.message
+        });
+    }
+};
+
+
+exports.checkedMovimiento = async (req, res) => {
+    const { id } = req.params;
+    const { checado } = req.body;
+
+    try {
+        // Buscar y actualizar el campo 'checado' del movimiento por su ID
+        const movimientoActualizado = await Movimiento.findByIdAndUpdate(
+            id,
+            { checado },
+            { new: true }
+        );
+
+        // Verificar si el movimiento existe
+        if (!movimientoActualizado) {
+            return res.status(404).json({
+                mensaje: 'Movimiento no encontrado'
+            });
+        }
+
+        res.status(200).json(movimientoActualizado);
+    } catch (error) {
+        res.status(500).json({
+            mensaje: 'Error al actualizar el estado de checado',
+            error: error.message
+        });
+    }
+};
+
+

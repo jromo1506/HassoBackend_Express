@@ -22,10 +22,22 @@ const MovimientoSchema = new Schema({
         type: Number,
         required: true
     },
-    // saldo: {
-    //     type: Number,
-    //     required: true
-    // },
+
+    sinFactura:{
+        type:Boolean,
+        required:false
+    },
+
+    folio:{
+        type:String,
+        required:false
+    },
+
+
+    tipoFactura:{
+        type:String,
+        required:false
+    },
     comprobante: {
         type: String,
         required: false
@@ -52,13 +64,18 @@ const MovimientoSchema = new Schema({
     },
     formaDePago: {
         type: String,
-        enum: ['Efectivo', 'Transferencia', 'Cheque', 'Tarjeta',''], // Ejemplo de formas de pago, ajusta según necesites
+        enum: ['Efectivo', 'Transferencia', 'Cheque', 'Debito','Credito'], // Ejemplo de formas de pago, ajusta según necesites
         required: false
     },
     idCajaChica: {
         type: Schema.Types.ObjectId,
         ref: 'CajaChica',
         required: true
+    },
+    checado:{
+        type:Boolean,
+        required:false,
+        default:false
     }
 });
 

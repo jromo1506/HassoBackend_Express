@@ -97,3 +97,18 @@ exports.getGastoByHojaContable = async (req, res) => {
     }
 };
 
+
+
+exports.importarGastos = async (req, res) => {
+    const gastosArray = req.body;
+
+    try {
+        // Usar insertMany para agregar todos los objetos en una sola llamada
+        const result = await Gasto.insertMany(gastosArray);
+        res.status(201).json({ message: 'Gastos agregados exitosamente', data: result });
+    } 
+    catch (error) {
+        res.status(500).json({ message: 'Error al agregar gastos', error: error.message });
+    }
+};
+
