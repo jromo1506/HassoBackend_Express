@@ -76,8 +76,8 @@ router.get('/movimientos', movimientoController.obtenerMovimientos);
 router.get('/movimientos/:id', movimientoController.obtenerMovimientoPorId);
 router.put('/movimientos/:id', movimientoController.actualizarMovimiento);
 router.delete('/movimientos/:id', movimientoController.eliminarMovimiento);
-router.post('/movimientos/validados',movimientoController.crearMovimientoConVerificacion);
-router.put('/movimientos/checked',movimientoController.checkedMovimiento);
+router.post('/movimientosValidados',movimientoController.crearMovimientoConVerificacion);
+router.put('/movimientosChecked/:id',movimientoController.checkedMovimiento);
 
 
 // HOJA CONTABLE
@@ -89,7 +89,7 @@ router.delete('/hojaContable/:id', hojaContableController.eliminarHojaContable);
 router.get('/hojaContable/usuario/:idUsuario',hojaContableController.getHojasContablesByUsuario);
 router.post('/hojaContable/checarExistencia',hojaContableController.verificarHojaContableActual);
 
-// GASTO CONTROLLER
+// GASTOS
 router.post('/gasto', gastoController.crearGasto);
 router.get('/gasto', gastoController.obtenerGastos);
 router.get('/gasto/:id', gastoController.obtenerGastoPorId);
@@ -97,6 +97,8 @@ router.put('/gasto/:id', gastoController.actualizarGasto);
 router.delete('/gasto/:id', gastoController.eliminarGasto);
 router.get('/gastosHojas/:id', gastoController.getGastoByHojaContable);
 router.post('/importarGastos', gastoController.importarGastos);
+router.post('/checarGastosDup',gastoController.checarDuplicados);
+
 
 // INGRESOS
 router.post('/ingreso', ingresoController.crearIngreso);

@@ -112,3 +112,24 @@ exports.importarGastos = async (req, res) => {
     }
 };
 
+exports.checarDuplicados = async(req,res) =>{
+    try {
+        const { RFC, fechaFactura } = req.body;
+
+        // Verificar si ya existe un gasto con el mismo RFC y fecha de factura
+        const existingGasto = await Gasto.findOne({ RFC, fechaFactura });
+        if (existingGasto) {
+            return res.status(400).json({ message: 'Ya existe un gasto con el mismo RFC o factura.' });
+        }
+
+        // Crear y guardar el nuevo gasto si no está duplicado
+        const nuevoGasto = new Gasto(req.body);
+        await nuevoGasto.save();
+
+        res.status(201).json(nuevoGasto);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error al guardar el gasto.' });
+    }
+}
+

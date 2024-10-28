@@ -64,7 +64,7 @@ const MovimientoSchema = new Schema({
     },
     formaDePago: {
         type: String,
-        enum: ['Efectivo', 'Transferencia', 'Cheque', 'Debito','Credito'], // Ejemplo de formas de pago, ajusta según necesites
+        enum: ['Efectivo', 'Transferencia', 'Cheque', 'Debito','Credito',''], // Ejemplo de formas de pago, ajusta según necesites
         required: false
     },
     idCajaChica: {

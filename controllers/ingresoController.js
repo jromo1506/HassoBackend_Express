@@ -91,3 +91,25 @@ exports.getIngresosByHojaContable = async (req, res) => {
         res.status(500).json({ message: 'Error al obtener los ingresos', error });
     }
 };
+
+
+exports.checarIngreso = async (req, res) => {
+    try {
+        const { RFC, fechaFactura } = req.body;
+
+        // Verificar si ya existe un ingreso con el mismo RFC y fecha de factura
+        const existingIngreso = await Ingreso.findOne({ RFC, fechaFactura });
+        if (existingIngreso) {
+            return res.status(400).json({ message: 'Ya existe un ingreso con el mismo RFC o factura.' });
+        }
+
+        // Crear y guardar el nuevo ingreso si no está duplicado
+        const nuevoIngreso = new Ingreso(req.body);
+        await nuevoIngreso.save();
+
+        res.status(201).json(nuevoIngreso);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error al guardar el ingreso.' });
+    }
+};
