@@ -25,7 +25,8 @@ const MovimientoSchema = new Schema({
 
     sinFactura:{
         type:Boolean,
-        required:false
+        required:false,
+        default:false
     },
 
     folio:{

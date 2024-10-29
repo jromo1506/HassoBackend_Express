@@ -28,6 +28,11 @@ const IngresoSchema = new Schema({
         type: Number,
         required: true
     },
+    impEsp:{
+        type:Number,
+        required:false,
+        default:0
+    },
     fechaFactura: {
         type: String,
         required: true
