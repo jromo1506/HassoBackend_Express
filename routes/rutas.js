@@ -67,7 +67,7 @@ router.get('/cajas-chicas/:id', cajaChicaController.obtenerCajaChicaPorId);
 router.put('/cajas-chicas/:id', cajaChicaController.actualizarCajaChica);
 router.delete('/cajas-chicas/:id', cajaChicaController.eliminarCajaChica);
 router.get('/cajas-chicas/usuario/:idUsuario',cajaChicaController.getCajasChicasByUsuario);
-router.post('cajas-chicas/buscarHojaContable',cajaChicaController.buscarHojaContable);
+router.post('/cajas-chicas/buscarHojaContable',cajaChicaController.buscarHojaContable);
 
 
 // MOVIMEINTO

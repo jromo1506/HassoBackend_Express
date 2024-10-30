@@ -30,7 +30,8 @@ const GastoSchema = new Schema({
     },
     impEsp:{
         type:Number,
-        required:true
+        required:false,
+        default:0
     },
     fechaFactura: {
         type: String,
