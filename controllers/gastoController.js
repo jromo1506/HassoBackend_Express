@@ -133,3 +133,28 @@ exports.checarDuplicados = async(req,res) =>{
     }
 }
 
+exports.createGastoValidarRFC = async (req, res) => {
+    try {
+        const { RFC, idHojaContable, ...restData } = req.body;
+
+        // Verificar duplicidad de RFC en el mismo idHojaContable
+        const existingGasto = await Gasto.findOne({
+            idHojaContable,
+            RFC
+        });
+        if (existingGasto) {
+            return res.status(400).json({ message: 'Gasto duplicado. Ya existe un gasto con el mismo RFC en esta hoja contable.' });
+        }
+
+        const newGasto = new Gasto({ RFC, idHojaContable, ...restData });
+        await newGasto.save();
+
+        res.status(201).json(newGasto);
+    } catch (error) {
+        res.status(500).json({ message: 'Error al crear el gasto', error });
+    }
+};
+
+
+
+

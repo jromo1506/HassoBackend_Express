@@ -113,3 +113,26 @@ exports.checarIngreso = async (req, res) => {
         res.status(500).json({ message: 'Error al guardar el ingreso.' });
     }
 };
+
+
+exports.createIngresoVerificarRFC = async (req, res) => {
+    try {
+        const { RFC, pedido, idHojaContable, ...restData } = req.body;
+
+        // Verificar duplicidad de RFC o pedido en el mismo idHojaContable
+        const existingIngreso = await Ingreso.findOne({
+            idHojaContable,
+            $or: [{ RFC }, { pedido }]
+        });
+        if (existingIngreso) {
+            return res.status(400).json({ message: 'Ingreso duplicado. Ya existe un ingreso con el mismo RFC o pedido en esta hoja contable.' });
+        }
+
+        const newIngreso = new Ingreso({ RFC, pedido, idHojaContable, ...restData });
+        await newIngreso.save();
+
+        res.status(201).json(newIngreso);
+    } catch (error) {
+        res.status(500).json({ message: 'Error al crear el ingreso', error });
+    }
+};
