@@ -104,6 +104,38 @@ exports.getHorasBySemanaAndEmpleado = async (req, res) => {
     }
 };
 
+exports.getHorasPorMesYAnio = async (req, res) => {
+    const { mes, ano } = req.params;
+    const fechaInicio = new Date(ano, mes - 1, 1);
+    const fechaFin = new Date(ano, mes, 1);
 
+    try {
+        const horas = await HorasTrabajadas.find({
+            fecha: { $gte: fechaInicio, $lt: fechaFin }
+        });
+        res.status(200).json(horas);
+    } catch (error) {
+        console.error("Error al obtener las horas:", error);
+        res.status(500).json({ error: 'Error al obtener las horas trabajadas' });
+    }
+};
+
+
+
+exports.getHorasBySemana = (req, res) => {
+    const { idSemana } = req.params;
+
+    HorasTrabajadas.find({ idSemana })
+        .then(horas => {
+            if (horas.length === 0) {
+                return res.status(404).json({ message: 'No se encontraron horas para la semana especificada.' });
+            }
+            res.status(200).json(horas);
+        })
+        .catch(error => {
+            console.error("Error al obtener las horas:", error);
+            res.status(500).json({ error: 'Error al obtener las horas trabajadas' });
+        });
+};
 
 
