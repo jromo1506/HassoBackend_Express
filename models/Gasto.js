@@ -30,7 +30,7 @@ const GastoSchema = new Schema({
     },
     impEsp:{
         type:Number,
-        required:true
+        required:false
     },
     fechaFactura: {
         type: String,
@@ -50,6 +50,10 @@ const GastoSchema = new Schema({
     },
     idHojaContable: {
         type: String,
+        required: true
+    },
+    folio:{
+        type: Number,
         required: true
     }
 });

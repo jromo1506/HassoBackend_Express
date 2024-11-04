@@ -77,6 +77,11 @@ const MovimientoSchema = new Schema({
         type:Boolean,
         required:false,
         default:false
+    },
+    exportado:{
+        type:Boolean,
+        required:false,
+        default:false,
     }
 });
 

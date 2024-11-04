@@ -1,4 +1,6 @@
 const Semana = require('../models/Semana');
+const Nomina = require('../models/Nomina'); // Asegúrate de tener este modelo
+const HorasTrabajadas = require('../models/HorasTrabajadas');
 const express = require('express');
 const router = express.Router();
 
@@ -125,5 +127,32 @@ exports.getSemanasByUsuario = async (req, res) => {
     } catch (error) {
         console.error('Error al obtener semanas:', error);
         res.status(500).json({ message: 'Error al obtener las semanas' });
+    }
+};
+
+
+
+exports.eliminarNominasHorasYSemana = async (req, res) => {
+    const { idSemana } = req.params;
+
+    try {
+        // Eliminar todas las HorasTrabajadas con el idSemana proporcionado
+        const horasResult = await HorasTrabajadas.deleteMany({ idSemana });
+        
+        // Eliminar todas las Nominas con el idSemana proporcionado
+        const nominasResult = await Nomina.deleteMany({ idSemana });
+        
+        // Eliminar la Semana con el idSemana proporcionado
+        const semanaResult = await Semana.deleteOne({ _id: idSemana });
+        console.log( `Se eliminaron ${horasResult.deletedCount} horas trabajadas, ${nominasResult.deletedCount} nóminas, y la semana con el id: ${idSemana}`);
+        return res.status(200).json({
+            message: `Se eliminaron ${horasResult.deletedCount} horas trabajadas, ${nominasResult.deletedCount} nóminas, y la semana con el id: ${idSemana}`
+        });
+    } catch (error) {
+        console.error('Error al eliminar nominas, horas trabajadas y semana:', error);
+        res.status(500).json({
+            message: 'Error al eliminar nominas, horas trabajadas y semana',
+            error
+        });
     }
 };

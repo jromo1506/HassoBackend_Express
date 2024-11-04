@@ -2,6 +2,9 @@ const Ingreso = require('../models/Ingreso');
 
 // Crear un nuevo Ingreso
 exports.crearIngreso = async (req, res) => {
+console.log(req.body);
+
+
     try {
         const nuevoIngreso = new Ingreso(req.body);
         await nuevoIngreso.save();
@@ -95,16 +98,29 @@ exports.getIngresosByHojaContable = async (req, res) => {
 
 exports.checarIngreso = async (req, res) => {
     try {
-        const { RFC, fechaFactura } = req.body;
+        const ingreso = req.body;
+        const { RFC, folio } = ingreso;
 
-        // Verificar si ya existe un ingreso con el mismo RFC y fecha de factura
-        const existingIngreso = await Ingreso.findOne({ RFC, fechaFactura });
-        if (existingIngreso) {
-            return res.status(400).json({ message: 'Ya existe un ingreso con el mismo RFC o factura.' });
+        // Verificar si ya existe un ingreso con el mismo RFC y folio
+        const ingresoDuplicadoAmbos = await Ingreso.findOne({ RFC, folio });
+        if (ingresoDuplicadoAmbos) {
+            return res.status(400).json({ message: 'Ya existe un ingreso con el mismo RFC y folio.' });
+        }
+
+        // Verificar si ya existe un ingreso con el mismo RFC
+        const ingresoDuplicadoRFC = await Ingreso.findOne({ RFC });
+        if (ingresoDuplicadoRFC) {
+            return res.status(400).json({ message: 'Ya existe un ingreso con el mismo RFC.' });
+        }
+
+        // Verificar si ya existe un ingreso con el mismo folio
+        const ingresoDuplicadoFolio = await Ingreso.findOne({ folio });
+        if (ingresoDuplicadoFolio) {
+            return res.status(400).json({ message: 'Ya existe un ingreso con el mismo folio.' });
         }
 
         // Crear y guardar el nuevo ingreso si no está duplicado
-        const nuevoIngreso = new Ingreso(req.body);
+        const nuevoIngreso = new Ingreso(ingreso);
         await nuevoIngreso.save();
 
         res.status(201).json(nuevoIngreso);
@@ -113,3 +129,4 @@ exports.checarIngreso = async (req, res) => {
         res.status(500).json({ message: 'Error al guardar el ingreso.' });
     }
 };
+

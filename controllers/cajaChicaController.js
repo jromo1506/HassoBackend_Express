@@ -94,10 +94,10 @@ exports.getCajasChicasByUsuario = async (req, res) => {
 exports.buscarHojaContable = async (req, res) => {
     try {
         const { mes, anio } = req.body;
-
+        console.log(mes + " " + anio ,"FECHA");
         // Verificar si existe una hoja de contable con el mismo mes y año
         const hojaContable = await HojaContable.findOne({ mes: mes, anio: anio });
-
+        console.log(hojaContable,"HOJA CONT");
         if (!hojaContable) {
             return res.status(404).json({ message: 'No se encontró ninguna Hoja Contable para este mes y año' });
         }

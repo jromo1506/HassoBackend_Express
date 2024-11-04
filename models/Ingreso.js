@@ -52,6 +52,10 @@ const IngresoSchema = new Schema({
     idHojaContable: {
         type: String,
         required: false
+    },
+    folio: {
+        type: Number,
+        required: true
     }
 });
 

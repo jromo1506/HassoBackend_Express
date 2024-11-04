@@ -34,6 +34,7 @@ router.delete('/proyectos/:id', proyectoController.deleteProyecto);
 
 
 // HORA TRABAJADA
+
 router.post('/horas-trabajadas', horasTrabajadasController.createHorasTrabajadas);
 router.get('/horas-trabajadas', horasTrabajadasController.getHorasTrabajadas);
 router.get('/horas-trabajadas/:id', horasTrabajadasController.getHorasTrabajadasById);
@@ -41,7 +42,8 @@ router.put('/horas-trabajadas/:id', horasTrabajadasController.updateHorasTrabaja
 router.delete('/horas-trabajadas/:id', horasTrabajadasController.deleteHorasTrabajadas);
 router.get('/horas-trabajadas/horas-semanales/:idSemana',horasTrabajadasController.getHorasDeSemanaPorId);
 router.get('/horas-trabajadas/:idSemana/:idEmpleado', horasTrabajadasController.getHorasBySemanaAndEmpleado);
-
+router.get('/obtenerHorasMesAnio/:mes/:ano', horasTrabajadasController.getHorasPorMesYAnio);
+router.get('/obtenerHorasSemana/:idSemana', horasTrabajadasController.getHorasBySemana);
 
 // SEMANA
 router.post('/semanas', semanaController.createSemanaDebug);
@@ -50,6 +52,7 @@ router.get('/semanas/:id', semanaController.getSemanaById);
 router.put('/semanas/:id', semanaController.updateSemana);
 router.delete('/semanas/:id', semanaController.deleteSemana);
 router.post('/semanas/verificar',semanaController.buscarSemana);
+router.delete('/eliminaNominasHoras/:idSemana',semanaController.eliminarNominasHorasYSemana);
 
 
 // USUARIOS
@@ -67,7 +70,7 @@ router.get('/cajas-chicas/:id', cajaChicaController.obtenerCajaChicaPorId);
 router.put('/cajas-chicas/:id', cajaChicaController.actualizarCajaChica);
 router.delete('/cajas-chicas/:id', cajaChicaController.eliminarCajaChica);
 router.get('/cajas-chicas/usuario/:idUsuario',cajaChicaController.getCajasChicasByUsuario);
-router.post('cajas-chicas/buscarHojaContable',cajaChicaController.buscarHojaContable);
+router.post('/cajas-chicas/buscarHojaContable',cajaChicaController.buscarHojaContable);
 
 
 // MOVIMEINTO
@@ -91,6 +94,7 @@ router.post('/hojaContable/checarExistencia',hojaContableController.verificarHoj
 
 // GASTOS
 router.post('/gasto', gastoController.crearGasto);
+router.post('/checarDuplicados', gastoController.checarDuplicados);
 router.get('/gasto', gastoController.obtenerGastos);
 router.get('/gasto/:id', gastoController.obtenerGastoPorId);
 router.put('/gasto/:id', gastoController.actualizarGasto);
@@ -102,6 +106,7 @@ router.post('/checarGastosDup',gastoController.checarDuplicados);
 
 // INGRESOS
 router.post('/ingreso', ingresoController.crearIngreso);
+router.post('/checarIngreso', ingresoController.checarIngreso);
 router.get('/ingreso', ingresoController.obtenerIngresos);
 router.get('/ingreso/:id', ingresoController.obtenerIngresoPorId);
 router.put('/ingreso/:id', ingresoController.actualizarIngreso);
