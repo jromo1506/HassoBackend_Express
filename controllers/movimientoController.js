@@ -15,7 +15,7 @@ exports.crearMovimiento = async (req, res) => {
 
 // Obtener todos los movimientos
 exports.obtenerMovimientos = async (req, res) => {
-    console.log(req.params,"obtenermovs")
+    console.log(req.params, "obtenermovs")
     try {
         const movimientos = await Movimiento.find().populate('idCajaChica');
         res.status(200).json(movimientos);
@@ -64,11 +64,20 @@ exports.eliminarMovimiento = async (req, res) => {
 };
 
 exports.crearMovimientoConVerificacion = async (req, res) => {
-    const { numeroFactura, rfc, ...restoDeDatos } = req.body;
+    const restoDeDatos = req.body;
+
+    const numeroFactura = restoDeDatos.numeroFactura;
+    const rfc = restoDeDatos.rfc;
+    const id = restoDeDatos.idCajaChica;
+
+    // console.log('Hola');
+
+    console.log('Rest: ', numeroFactura, rfc);
 
     try {
         // Verificar si ya existe un movimiento con el mismo numeroFactura o RFC
         const duplicado = await Movimiento.findOne({
+            idCajaChica: id,
             $or: [
                 { numeroFactura: numeroFactura },
                 { rfc: rfc }
@@ -85,8 +94,12 @@ exports.crearMovimientoConVerificacion = async (req, res) => {
         const nuevoMovimiento = new Movimiento({
             numeroFactura,
             rfc,
+            id,
             ...restoDeDatos
         });
+
+        console.log(nuevoMovimiento);
+        
 
         await nuevoMovimiento.save();
         res.status(201).json(nuevoMovimiento);

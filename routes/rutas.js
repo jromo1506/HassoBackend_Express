@@ -94,6 +94,8 @@ router.post('/hojaContable/checarExistencia',hojaContableController.verificarHoj
 
 // GASTOS
 router.post('/gasto', gastoController.createGastoValidarRFC);
+// router.post('/gasto', gastoController.crearGasto);
+router.post('/checarDuplicados', gastoController.checarDuplicados);
 router.get('/gasto', gastoController.obtenerGastos);
 router.get('/gasto/:id', gastoController.obtenerGastoPorId);
 router.put('/gasto/:id', gastoController.actualizarGasto);
@@ -105,6 +107,8 @@ router.post('/checarGastosDup',gastoController.checarDuplicados);
 
 // INGRESOS
 router.post('/ingreso', ingresoController.createIngresoVerificarRFC);
+// router.post('/ingreso', ingresoController.crearIngreso);
+router.post('/checarIngreso', ingresoController.checarIngreso);
 router.get('/ingreso', ingresoController.obtenerIngresos);
 router.get('/ingreso/:id', ingresoController.obtenerIngresoPorId);
 router.put('/ingreso/:id', ingresoController.actualizarIngreso);

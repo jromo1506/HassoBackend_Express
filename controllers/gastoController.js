@@ -9,7 +9,7 @@ exports.crearGasto = async (req, res) => {
         await nuevoGasto.save();
         res.status(201).json(nuevoGasto);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ message: 'Error al guardar el gasto.' });
     }
 };
 
@@ -114,16 +114,29 @@ exports.importarGastos = async (req, res) => {
 
 exports.checarDuplicados = async(req,res) =>{
     try {
-        const { RFC, fechaFactura } = req.body;
+        const gasto = req.body;
+        const { RFC, folio } = gasto;
 
-        // Verificar si ya existe un gasto con el mismo RFC y fecha de factura
-        const existingGasto = await Gasto.findOne({ RFC, fechaFactura });
-        if (existingGasto) {
-            return res.status(400).json({ message: 'Ya existe un gasto con el mismo RFC o factura.' });
+        // Verificar si ya existe un ingreso con el mismo RFC y folio
+        const ingresoDuplicadoAmbos = await Gasto.findOne({ RFC, folio });
+        if (ingresoDuplicadoAmbos) {
+            return res.status(400).json({ message: 'Ya existe un gasto con el mismo RFC y folio.' });
         }
 
-        // Crear y guardar el nuevo gasto si no está duplicado
-        const nuevoGasto = new Gasto(req.body);
+        // Verificar si ya existe un ingreso con el mismo RFC
+        const ingresoDuplicadoRFC = await Gasto.findOne({ RFC });
+        if (ingresoDuplicadoRFC) {
+            return res.status(400).json({ message: 'Ya existe un gasto con el mismo RFC.' });
+        }
+
+        // Verificar si ya existe un ingreso con el mismo folio
+        const ingresoDuplicadoFolio = await Gasto.findOne({ folio });
+        if (ingresoDuplicadoFolio) {
+            return res.status(400).json({ message: 'Ya existe un gasto con el mismo folio.' });
+        }
+
+        // Crear y guardar el nuevo ingreso si no está duplicado
+        const nuevoGasto = new Gasto(gasto);
         await nuevoGasto.save();
 
         res.status(201).json(nuevoGasto);
