@@ -140,4 +140,30 @@ exports.checkedMovimiento = async (req, res) => {
     }
 };
 
+exports.actualizarExportados = async (req, res) => {
+    try {
+        // Recibir la lista de IDs de los objetos a actualizar
+        const { ids } = req.body;
+
+        // Validar que haya una lista de IDs en la solicitud
+        if (!Array.isArray(ids) || ids.length === 0) {
+            return res.status(400).json({ message: 'No se proporcionaron IDs válidos para actualizar.' });
+        }
+
+        // Actualizar los objetos que coinciden con los IDs recibidos, estableciendo exportado a true
+        const result = await Movimiento.updateMany(
+            { _id: { $in: ids }, checado: true }, // Solo actualiza los que tienen checado en true
+            { $set: { exportado: true } }
+        );
+
+        // Enviar respuesta con el resultado de la actualización
+        res.status(200).json({
+            message: `${result.nModified} registros han sido actualizados a exportado = true.`,
+            result
+        });
+    } catch (error) {
+        console.error("Error al actualizar los movimientos:", error);
+        res.status(500).json({ message: 'Error al actualizar los movimientos.', error });
+    }
+};
 

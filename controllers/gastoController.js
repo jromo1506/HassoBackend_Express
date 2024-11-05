@@ -115,25 +115,28 @@ exports.importarGastos = async (req, res) => {
 exports.checarDuplicados = async(req,res) =>{
     try {
         const gasto = req.body;
-        const { RFC, folio } = gasto;
+        const { RFC, folio ,idHojaContable} = gasto;
 
         // Verificar si ya existe un ingreso con el mismo RFC y folio
-        const ingresoDuplicadoAmbos = await Gasto.findOne({ RFC, folio });
+        const ingresoDuplicadoAmbos = await Gasto.findOne({
+            idHojaContable,
+            $or: [{ RFC }, { folio }]
+        });
         if (ingresoDuplicadoAmbos) {
             return res.status(400).json({ message: 'Ya existe un gasto con el mismo RFC y folio.' });
         }
 
-        // Verificar si ya existe un ingreso con el mismo RFC
-        const ingresoDuplicadoRFC = await Gasto.findOne({ RFC });
-        if (ingresoDuplicadoRFC) {
-            return res.status(400).json({ message: 'Ya existe un gasto con el mismo RFC.' });
-        }
+        // // Verificar si ya existe un ingreso con el mismo RFC
+        // const ingresoDuplicadoRFC = await Gasto.findOne({ RFC });
+        // if (ingresoDuplicadoRFC) {
+        //     return res.status(400).json({ message: 'Ya existe un gasto con el mismo RFC.' });
+        // }
 
-        // Verificar si ya existe un ingreso con el mismo folio
-        const ingresoDuplicadoFolio = await Gasto.findOne({ folio });
-        if (ingresoDuplicadoFolio) {
-            return res.status(400).json({ message: 'Ya existe un gasto con el mismo folio.' });
-        }
+        // // Verificar si ya existe un ingreso con el mismo folio
+        // const ingresoDuplicadoFolio = await Gasto.findOne({ folio });
+        // if (ingresoDuplicadoFolio) {
+        //     return res.status(400).json({ message: 'Ya existe un gasto con el mismo folio.' });
+        // }
 
         // Crear y guardar el nuevo ingreso si no está duplicado
         const nuevoGasto = new Gasto(gasto);

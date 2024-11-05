@@ -99,25 +99,28 @@ exports.getIngresosByHojaContable = async (req, res) => {
 exports.checarIngreso = async (req, res) => {
     try {
         const ingreso = req.body;
-        const { RFC, folio } = ingreso;
+        const { RFC, folio, idHojaContable } = ingreso;
 
         // Verificar si ya existe un ingreso con el mismo RFC y folio
-        const ingresoDuplicadoAmbos = await Ingreso.findOne({ RFC, folio });
+        const ingresoDuplicadoAmbos = await Ingreso.findOne({
+            idHojaContable,
+            $or: [{ RFC }, { folio }]
+        });
         if (ingresoDuplicadoAmbos) {
-            return res.status(400).json({ message: 'Ya existe un ingreso con el mismo RFC y folio.' });
+            return res.status(400).json({ message: 'Ya existe un ingreso con el mismo RFC o folio.' });
         }
 
-        // Verificar si ya existe un ingreso con el mismo RFC
-        const ingresoDuplicadoRFC = await Ingreso.findOne({ RFC });
-        if (ingresoDuplicadoRFC) {
-            return res.status(400).json({ message: 'Ya existe un ingreso con el mismo RFC.' });
-        }
+        // // Verificar si ya existe un ingreso con el mismo RFC
+        // const ingresoDuplicadoRFC = await Ingreso.findOne({ RFC });
+        // if (ingresoDuplicadoRFC) {
+        //     return res.status(400).json({ message: 'Ya existe un ingreso con el mismo RFC.' });
+        // }
 
-        // Verificar si ya existe un ingreso con el mismo folio
-        const ingresoDuplicadoFolio = await Ingreso.findOne({ folio });
-        if (ingresoDuplicadoFolio) {
-            return res.status(400).json({ message: 'Ya existe un ingreso con el mismo folio.' });
-        }
+        // // Verificar si ya existe un ingreso con el mismo folio
+        // const ingresoDuplicadoFolio = await Ingreso.findOne({ folio });
+        // if (ingresoDuplicadoFolio) {
+        //     return res.status(400).json({ message: 'Ya existe un ingreso con el mismo folio.' });
+        // }
 
         // Crear y guardar el nuevo ingreso si no está duplicado
         const nuevoIngreso = new Ingreso(ingreso);

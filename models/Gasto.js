@@ -52,14 +52,15 @@ const GastoSchema = new Schema({
         type: String,
         required: true
     },
+    folio:{
+        type:String,
+        required:false,
+    },
     idHojaContable: {
         type: String,
         required: true
     },
-    folio:{
-        type: Number,
-        required: true
-    }
+
 });
 
 
