@@ -33,6 +33,10 @@ const IngresoSchema = new Schema({
         required:false,
         default:0
     },
+    factura:{
+        type:String,
+        required:false,
+    },
     fechaFactura: {
         type: String,
         required: true

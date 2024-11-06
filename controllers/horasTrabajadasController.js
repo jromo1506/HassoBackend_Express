@@ -108,6 +108,7 @@ exports.getHorasPorMesYAnio = async (req, res) => {
     const { mes, ano } = req.params;
     const fechaInicio = new Date(ano, mes - 1, 1);
     const fechaFin = new Date(ano, mes, 1);
+    console.log("Se hizo la peticion");
 
     try {
         const horas = await HorasTrabajadas.find({

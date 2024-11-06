@@ -32,6 +32,10 @@ const GastoSchema = new Schema({
         type:Number,
         required:false
     },
+    factura:{
+        type:String,
+        required:false,
+    },
     fechaFactura: {
         type: String,
         required: true
@@ -48,14 +52,15 @@ const GastoSchema = new Schema({
         type: String,
         required: true
     },
+    folio:{
+        type:String,
+        required:false,
+    },
     idHojaContable: {
         type: String,
         required: true
     },
-    folio:{
-        type: Number,
-        required: true
-    }
+
 });
 
 
