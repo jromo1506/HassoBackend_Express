@@ -2,10 +2,10 @@ const CajaChica = require('../models/CajaChica');
 const HojaContable = require('../models/HojaContable');
 const express = require('express');
 const router = express.Router();
-/*
+
 const Movimiento = require('../models/Movimiento');
 
-exports.actualizarCajaChica = async (req, res) => {
+exports.actualizarFilaCajaChica = async (req, res) => {
   try {
     const { id } = req.params;
     const updatedData = req.body;
@@ -25,7 +25,7 @@ exports.actualizarCajaChica = async (req, res) => {
     res.status(500).json({ message: 'Error al actualizar el movimiento' });
   }
 };
-*/
+
 
 // Crear una nueva caja chica
 exports.crearCajaChica = async (req, res) => {

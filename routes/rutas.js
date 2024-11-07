@@ -67,7 +67,7 @@ router.delete('/usuarios/:id', usuarioController.eliminarUsuario);
 router.post('/cajas-chicas', cajaChicaController.crearCajaChica);
 router.get('/cajas-chicas', cajaChicaController.obtenerCajasChicas);
 router.get('/cajas-chicas/:id', cajaChicaController.obtenerCajaChicaPorId);
-router.put('/cajas-chicas/:id', cajaChicaController.actualizarCajaChica);
+router.put('/cajas-chicas/:id', cajaChicaController.actualizarFilaCajaChica);
 router.delete('/cajas-chicas/:id', cajaChicaController.eliminarCajaChica);
 router.get('/cajas-chicas/usuario/:idUsuario',cajaChicaController.getCajasChicasByUsuario);
 router.post('/cajas-chicas/buscarHojaContable',cajaChicaController.buscarHojaContable);
