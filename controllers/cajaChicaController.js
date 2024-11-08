@@ -3,6 +3,28 @@ const HojaContable = require('../models/HojaContable');
 const express = require('express');
 const router = express.Router();
 
+const Movimiento = require('../models/Movimiento');
+
+exports.actualizarFilaCajaChica = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedData = req.body;
+
+    // Encuentra y actualiza el movimiento por su ID
+    const updatedMovimiento = await Movimiento.findByIdAndUpdate(id, updatedData, {
+      new: true, // Devuelve el documento actualizado
+    });
+
+    if (!updatedMovimiento) {
+      return res.status(404).json({ message: 'Movimiento no encontrado' });
+    }
+
+    res.json(updatedMovimiento);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error al actualizar el movimiento' });
+  }
+};
 
 
 // Crear una nueva caja chica
