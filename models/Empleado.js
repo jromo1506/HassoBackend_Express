@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const EmpleadoSchema = new Schema({
+    id:{
+        type:String,
+        require:true
+    },
     nombre: {
         type: String,
         required: true
@@ -53,6 +57,11 @@ const EmpleadoSchema = new Schema({
     puesto:{
         type:String,
         required:true
+    },
+    despedido:{
+        type:Boolean,
+        required:false,
+        default:false
     }
 
 

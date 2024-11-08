@@ -27,6 +27,15 @@ exports.getEmpleados = async (req, res) => {
     }
 };
 
+exports.getEmpleadosDesp = async (req, res) => {
+    try {
+        const empleados = await Empleado.find({ despedido: false });
+        res.status(200).json(empleados);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
 // Obtener un empleado por ID
 exports.getEmpleadoById = async (req, res) => {
     try {
@@ -66,13 +75,31 @@ exports.deleteEmpleado = async (req, res) => {
     }
 };
 
+exports.despedirEmpleado = async (req, res) => {
+    try {
+        const empleado = await Empleado.findByIdAndUpdate(
+            req.params.id,
+            { despedido: true },
+            { new: true }
+        );
+        
+        if (!empleado) {
+            return res.status(404).json({ error: 'Empleado no encontrado' });
+        }
+        
+        res.status(200).json({ message: 'Empleado marcado como despedido', empleado });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
 
 exports.validarRfcCurpTarjCuenEmpleado = async (req, res) => {
     try {
         const { rfc, curp, tarjeta, cuenta } = req.body;
 
-        // Verificar si ya existe un empleado con el mismo RFC, CURP, Tarjeta o Cuenta
+        // Verificar si ya existe un empleado no despedido con el mismo RFC, CURP, Tarjeta o Cuenta
         const empleadoExistente = await Empleado.findOne({
+            despedido: false, // Solo busca empleados no despedidos
             $or: [
                 { rfc: rfc },
                 { curp: curp },
@@ -120,6 +147,7 @@ exports.validarRfcCurpTarjCuenEmpleado = async (req, res) => {
         });
     }
 };
+
 
 
 

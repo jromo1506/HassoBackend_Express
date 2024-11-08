@@ -18,12 +18,13 @@ const solicitudController = require('../controllers/solicitudController');
 
 // EMPLEADO
 router.post('/empleados', empleadoController.createEmpleado);
-router.get('/empleados', empleadoController.getEmpleados);
+router.get('/empleados', empleadoController.getEmpleadosDesp);
 router.get('/empleados/:id', empleadoController.getEmpleadoById);
 router.put('/empleados/:id', empleadoController.updateEmpleado);
 router.delete('/empleados/:id', empleadoController.deleteEmpleado);
 router.post('/empleados/validarRepetidos',empleadoController.validarRfcCurpTarjCuenEmpleado);
 router.get('/buscaEmpleado', empleadoController.buscarEmpleado);
+router.put('/despedirEmpleado/:id',empleadoController.despedirEmpleado);
 
 // PROYECTO
 router.post('/proyectos', proyectoController.createProyecto);

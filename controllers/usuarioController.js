@@ -9,6 +9,13 @@ const bcrypt = require('bcrypt');
 // Crear un nuevo usuario
 exports.crearUsuario = async (req, res) => {
     try {
+        // Verifica si el usuario ya existe
+        const usuarioExistente = await Usuario.findOne({ usuario: req.body.usuario });
+
+        if (usuarioExistente) {
+            return res.status(400).json({ message: 'El usuario ya existe' });
+        }
+
         const saltRounds = 10; // Define el número de rondas de cifrado
         const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
 
@@ -25,7 +32,6 @@ exports.crearUsuario = async (req, res) => {
         res.status(500).json({ message: 'Error al crear el usuario', error });
     }
 };
-
 exports.autenticarUsuario = async(req,res) =>{
     const { usuario, password } = req.body;
 

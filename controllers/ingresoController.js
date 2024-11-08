@@ -39,7 +39,10 @@ exports.obtenerIngresoPorId = async (req, res) => {
 
 // Actualizar un Ingreso
 exports.actualizarIngreso = async (req, res) => {
+    
     try {
+        console.log(req.body,"EDITAR INGRESO");
+        console.log(req.params.id,"EDITAR INGRESO");
         const ingresoActualizado = await Ingreso.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
             runValidators: true
@@ -155,3 +158,19 @@ exports.createIngresoVerificarRFC = async (req, res) => {
         res.status(500).json({ message: 'Error al crear el ingreso', error });
     }
 };
+
+
+exports.editIngreso = async (req,res) => {
+ 
+    try{
+       
+        const IngresoActualizado = await Usuario.findByIdAndUpdate(req.params.id,req.body,{new:true})
+        if (!IngresoActualizado) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+        res.status(200).json(IngresoActualizado);
+    }
+    catch(err){
+        res.status(500).json({ message: 'Error al actualizar el usuario', error });
+    }
+}
