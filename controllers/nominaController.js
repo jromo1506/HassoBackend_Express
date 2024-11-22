@@ -16,6 +16,28 @@ exports.createNomina = async (req, res) => {
     }
 };
 
+exports.verificarOCrearNomina = async (req, res) => {
+    const { idSemana, idEmpleado, ...nominaData } = req.body;
+
+    try {
+        // Verificar si ya existe una nómina con el mismo idSemana y idEmpleado
+        const existingNomina = await Nomina.findOne({ idSemana, idEmpleado });
+        
+        if (existingNomina) {
+            return res.status(400).json({ message: "La nómina ya existe para el idSemana e idEmpleado especificados." });
+        }
+
+        // Si no existe, crea una nueva nómina con los datos recibidos
+        const nuevaNomina = new Nomina({ idSemana, idEmpleado, ...nominaData });
+        await nuevaNomina.save();
+
+        return res.status(201).json({ message: "Nómina creada exitosamente.", nomina: nuevaNomina });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Error al crear la nómina.", error });
+    }
+};
+
 // Obtener todas las nóminas
 exports.getNominas = async (req, res) => {
     try {

@@ -95,12 +95,13 @@ exports.despedirEmpleado = async (req, res) => {
 
 exports.validarRfcCurpTarjCuenEmpleado = async (req, res) => {
     try {
-        const { rfc, curp, tarjeta, cuenta } = req.body;
-
+        const { idEmp, rfc, curp, tarjeta, cuenta } = req.body;
+       
         // Verificar si ya existe un empleado no despedido con el mismo RFC, CURP, Tarjeta o Cuenta
         const empleadoExistente = await Empleado.findOne({
             despedido: false, // Solo busca empleados no despedidos
             $or: [
+                {idEmp:idEmp},
                 { rfc: rfc },
                 { curp: curp },
                 { tarjeta: tarjeta },
@@ -109,9 +110,14 @@ exports.validarRfcCurpTarjCuenEmpleado = async (req, res) => {
         });
 
         if (empleadoExistente) {
+       
             let messages = [];
 
             // Construir mensajes específicos para cada campo duplicado
+            if (empleadoExistente.idEmp === idEmp) {
+                  return res.status(400).json({ message });
+                messages.push('Id de usuario repetido ');
+            }
             if (empleadoExistente.rfc === rfc) {
                 messages.push('El RFC ingresado ya existe.');
             }
@@ -124,10 +130,11 @@ exports.validarRfcCurpTarjCuenEmpleado = async (req, res) => {
             if (empleadoExistente.cuenta === cuenta) {
                 messages.push('La cuenta ingresada ya existe.');
             }
-
+            
             // Unir todos los mensajes en una sola cadena
             const message = messages.join(' ');
-
+            
+            console.log(messages,"CONST");
             return res.status(400).json({ message });
         }
 
@@ -152,12 +159,10 @@ exports.validarRfcCurpTarjCuenEmpleado = async (req, res) => {
 
 
 
-
-exports.buscarEmpleado = async(req,res) =>{
-
+exports.buscarEmpleado = async (req, res) => {
     try {
         const { searchQuery } = req.query;
-        // console.log(searchQuery,"Searh kuery");
+
         if (!searchQuery) {
             return res.status(400).json({
                 message: 'Debe proporcionar una cadena de búsqueda'
@@ -167,12 +172,17 @@ exports.buscarEmpleado = async(req,res) =>{
         // Crear expresiones regulares para cada campo que buscaremos
         const regex = new RegExp(searchQuery, 'i'); // 'i' hace que sea insensible a mayúsculas y minúsculas
 
-        // Buscar empleados que coincidan en nombre, apePat o apeMat
+        // Buscar empleados que coincidan en nombre, apePat o apeMat, y que no estén despedidos
         const empleados = await Empleado.find({
-            $or: [
-                { nombre: regex },
-                { apePat: regex },
-                { apeMat: regex }
+            $and: [
+                {
+                    $or: [
+                        { nombre: regex },
+                        { apePat: regex },
+                        { apeMat: regex }
+                    ]
+                },
+                { despedido: { $ne: true } } // Excluir empleados despedidos
             ]
         }).sort({ nombre: 1, apePat: 1, apeMat: 1 }); // Ordenar alfabéticamente
 
@@ -189,6 +199,5 @@ exports.buscarEmpleado = async(req,res) =>{
             error: error.message
         });
     }
-}
-
+};
 

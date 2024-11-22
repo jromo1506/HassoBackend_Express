@@ -89,3 +89,41 @@ exports.deleteProveedor = async (req, res) => {
         res.status(500).json({ message: 'Error al eliminar el proveedor', error });
     }
 };
+
+
+
+exports.buscarProveedor = async (req, res) => {
+    try {
+        const { searchQuery } = req.query;
+        
+        if (!searchQuery) {
+            return res.status(400).json({
+                message: 'Debe proporcionar una cadena de búsqueda'
+            });
+        }
+
+        // Crear expresión regular para la búsqueda insensible a mayúsculas y minúsculas
+        const regex = new RegExp(searchQuery, 'i');
+
+        // Buscar proveedores que coincidan en nombre o rfc
+        const proveedores = await Proveedor.find({
+            $or: [
+                { nombre: regex },
+                { rfc: regex }
+            ]
+        }).sort({ nombre: 1 }); // Ordenar alfabéticamente por nombre
+
+        console.log(proveedores,"kueri");
+        // Enviar resultados
+        res.status(200).json({
+            message: `Se encontraron ${proveedores.length} proveedores que coinciden con la búsqueda`,
+            proveedores
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: 'Error al buscar proveedores',
+            error: error.message
+        });
+    }
+};

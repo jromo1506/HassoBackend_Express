@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const EmpleadoSchema = new Schema({
-    id:{
+    idEmp:{
         type:String,
         require:true
     },

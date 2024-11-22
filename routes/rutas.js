@@ -26,12 +26,14 @@ router.post('/empleados/validarRepetidos',empleadoController.validarRfcCurpTarjC
 router.get('/buscaEmpleado', empleadoController.buscarEmpleado);
 router.put('/despedirEmpleado/:id',empleadoController.despedirEmpleado);
 
+
 // PROYECTO
 router.post('/proyectos', proyectoController.createProyecto);
 router.get('/proyectos', proyectoController.getProyectos);
 router.get('/proyectos/:id', proyectoController.getProyectoById);
 router.put('/proyectos/:id', proyectoController.updateProyecto);
 router.delete('/proyectos/:id', proyectoController.deleteProyecto);
+router.get('/buscaProyecto',proyectoController.buscarProyecto);
 
 
 // HORA TRABAJADA
@@ -63,6 +65,7 @@ router.get('/usuarios', usuarioController.obtenerUsuarios);
 router.get('/usuarios/:id', usuarioController.obtenerUsuarioPorId);
 router.put('/usuarios/:id', usuarioController.actualizarUsuario);
 router.delete('/usuarios/:id', usuarioController.eliminarUsuario);
+
 
 // CAJA CHICA
 router.post('/cajas-chicas', cajaChicaController.crearCajaChica);
@@ -124,7 +127,7 @@ router.get('/proveedor', proveedorController.getProveedores);
 router.get('/proveedor/:id', proveedorController.getProveedorById);
 router.put('/proveedor/:id', proveedorController.updateProveedor);
 router.delete('/proveedor/:id', proveedorController.deleteProveedor);
-
+router.get('/buscaProveedor',proveedorController.buscarProveedor);
 
 // NOMINAS
 router.post('/nominas', nominaController.createNomina);
@@ -133,13 +136,14 @@ router.get('/nominas/:idSemana', nominaController.getNominasBySemana);
 router.get('/nominas/:idSemana/:idEmpleado', nominaController.getNominaById);
 router.put('/nominas/:idSemana/:idEmpleado', nominaController.updateNomina);
 router.delete('/nominas/:idSemana/:idEmpleado', nominaController.deleteNomina);
-
+router.post('/nominaExtemporanea',nominaController.verificarOCrearNomina);
 // CLIENTE
 router.post('/cliente', clienteController.crearCliente);
 router.get('/cliente', clienteController.obtenerClientes);
 router.get('/cliente/:id', clienteController.obtenerClientePorId);
 router.put('/cliente/:id', clienteController.actualizarCliente);
 router.delete('/cliente/:id', clienteController.eliminarCliente);
+router.get('/buscaCliente',clienteController.buscarCliente);
 
 // SOLICITUD
 router.post('/solicitud',solicitudController.createSolicitud);

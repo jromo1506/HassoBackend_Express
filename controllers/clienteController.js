@@ -59,3 +59,38 @@ exports.eliminarCliente = async (req, res) => {
         res.status(500).json({ mensaje: 'Error al eliminar el cliente', error });
     }
 };
+
+exports.buscarCliente = async (req, res) => {
+    try {
+        const { searchQuery } = req.query;
+
+        if (!searchQuery) {
+            return res.status(400).json({
+                message: 'Debe proporcionar una cadena de búsqueda'
+            });
+        }
+
+        // Crear expresión regular para la búsqueda insensible a mayúsculas y minúsculas
+        const regex = new RegExp(searchQuery, 'i');
+
+        // Buscar clientes que coincidan en nombre o rfc
+        const clientes = await Cliente.find({
+            $or: [
+                { nombre: regex },
+                { rfc: regex }
+            ]
+        }).sort({ nombre: 1 }); // Ordenar alfabéticamente por nombre
+
+        // Enviar resultados
+        res.status(200).json({
+            message: `Se encontraron ${clientes.length} clientes que coinciden con la búsqueda`,
+            clientes
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: 'Error al buscar clientes',
+            error: error.message
+        });
+    }
+};
