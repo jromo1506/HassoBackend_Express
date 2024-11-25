@@ -144,7 +144,6 @@ exports.getHorasBySemana = (req, res) => {
 
 
 // NUEVAS FUNCIONES DE NOMINAS
-
 exports.darDeAltaHorasRegularesExtras = async (req, res) => {
     const {
         idSemana,
@@ -157,10 +156,17 @@ exports.darDeAltaHorasRegularesExtras = async (req, res) => {
         diaSemana,
     } = req.body;
 
+    console.log('Request Body:', req.body);
+
     try {
-        console.log({ idSemana, idEmpleado },"Nomina");
+        // Convertir referencias a cadenas explícitamente
+        const idProyectoStr = idProyecto.toString();
+        const idEmpleadoStr = idEmpleado.toString();
+
+        console.log({ idSemana, idEmpleado: idEmpleadoStr }, "Nomina");
+
         // Busca la nómina del empleado para la semana especificada
-        const nomina = await Nomina.findOne({ idSemana, idEmpleado });
+        const nomina = await Nomina.findOne({ idSemana, idEmpleado: idEmpleadoStr });
 
         if (!nomina) {
             return res.status(404).json({ message: 'Nómina no encontrada para el empleado y la semana especificados.' });
@@ -168,47 +174,68 @@ exports.darDeAltaHorasRegularesExtras = async (req, res) => {
 
         const horasFaltantes = nomina.horasFaltantes;
 
-        if (horasTrabajadas <= horasFaltantes) {
+        if (horasFaltantes > 0) {
             // Caso 1: Las horas trabajadas caben dentro de las horas faltantes
-            await HorasTrabajadas.create({
-                idSemana,
-                idProyecto,
-                idEmpleado,
-                nombreProyecto,
-                nombreEmpleado,
-                horasTrabajadas,
-                fecha,
-                diaSemana,
-                sonHorasExtra: false,
-            });
+            if (horasTrabajadas <= horasFaltantes) {
+                await HorasTrabajadas.create({
+                    idSemana,
+                    idProyecto: idProyectoStr,
+                    idEmpleado: idEmpleadoStr,
+                    nombreProyecto,
+                    nombreEmpleado,
+                    horasTrabajadas,
+                    fecha,
+                    diaSemana,
+                    sonHorasExtra: false,
+                });
 
-            // Actualiza las horas faltantes en la nómina
-            nomina.horasFaltantes -= horasTrabajadas;
-            await nomina.save();
+                // Actualiza las horas faltantes en la nómina
+                nomina.horasFaltantes -= horasTrabajadas;
+                await nomina.save();
+            } else {
+                // Caso 2: Las horas trabajadas exceden las horas faltantes
+                const horasRegulares = horasFaltantes;
+                const horasExtras = horasTrabajadas - horasFaltantes;
 
+                // Alta para las horas regulares
+                await HorasTrabajadas.create({
+                    idSemana,
+                    idProyecto: idProyectoStr,
+                    idEmpleado: idEmpleadoStr,
+                    nombreProyecto,
+                    nombreEmpleado,
+                    horasTrabajadas: horasRegulares,
+                    fecha,
+                    diaSemana,
+                    sonHorasExtra: false,
+                });
+
+                // Alta para las horas extras
+                await HorasTrabajadas.create({
+                    idSemana,
+                    idProyecto: idProyectoStr,
+                    idEmpleado: idEmpleadoStr,
+                    nombreProyecto,
+                    nombreEmpleado,
+                    horasTrabajadas: horasExtras,
+                    fecha,
+                    diaSemana,
+                    sonHorasExtra: true,
+                });
+
+                // Actualiza las horas faltantes en la nómina a 0
+                nomina.horasFaltantes = 0;
+                await nomina.save();
+            }
         } else {
-            // Caso 2: Las horas trabajadas exceden las horas faltantes
-            const horasRegulares = horasFaltantes;
-            const horasExtras = horasTrabajadas - horasFaltantes;
-
-            // Alta para las horas regulares
-            await HorasTrabajadas.create({
-                idSemana,
-                idProyecto,
-                idEmpleado,
-                nombreProyecto,
-                nombreEmpleado,
-                horasTrabajadas: horasRegulares,
-                fecha,
-                diaSemana,
-                sonHorasExtra: false,
-            });
+            // Caso 3: Si las horas faltantes ya son 0, solo registrar las horas extras
+            const horasExtras = horasTrabajadas;
 
             // Alta para las horas extras
             await HorasTrabajadas.create({
                 idSemana,
-                idProyecto,
-                idEmpleado,
+                idProyecto: idProyectoStr,
+                idEmpleado: idEmpleadoStr,
                 nombreProyecto,
                 nombreEmpleado,
                 horasTrabajadas: horasExtras,
@@ -217,9 +244,7 @@ exports.darDeAltaHorasRegularesExtras = async (req, res) => {
                 sonHorasExtra: true,
             });
 
-            // Actualiza las horas faltantes en la nómina a 0
-            nomina.horasFaltantes = 0;
-            await nomina.save();
+            // No se actualizan las horas faltantes porque ya son 0
         }
 
         res.status(201).json({ message: 'Horas trabajadas registradas correctamente.' });
@@ -228,5 +253,3 @@ exports.darDeAltaHorasRegularesExtras = async (req, res) => {
         res.status(500).json({ message: 'Error al registrar las horas trabajadas.', error });
     }
 };
-
-

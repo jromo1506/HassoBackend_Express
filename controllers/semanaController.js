@@ -157,38 +157,152 @@ exports.eliminarNominasHorasYSemana = async (req, res) => {
     }
 };
 
-
-
+// REGRESA EL ARRAY DE NOMINAS CON SUS HORAS
 exports.obtenerNominasDeUnaSemanaJuntoConSusHoras = async (req, res) => {
     const { idSemana } = req.params; // Recibe el ID de la semana como parámetro
 
     try {
-        // Encuentra la semana por ID
-        const semana = await Semana.findById(idSemana).populate('idHorasTrabajadas');
+        // Encuentra todas las nóminas relacionadas con esta semana
+        const nominas = await Nomina.find({ idSemana });
 
-        if (!semana) {
-            return res.status(404).json({ message: 'Semana no encontrada' });
+        if (!nominas.length) {
+            return res.status(404).json({ message: 'No se encontraron nóminas para esta semana.' });
         }
 
-        // Encuentra todas las nóminas relacionadas con esta semana
-        const nominas = await Nomina.find({ idSemana: semana._id });
-
-        // Agrega las horas trabajadas correspondientes a cada nómina
-        const result = await Promise.all(
-            nominas.map(async (nomina) => {
-                const horasTrabajadas = semana.idHorasTrabajadas.filter(
-                    (hora) => hora.idEmpleado.toString() === nomina.idEmpleado
-                );
-                return {
-                    ...nomina.toObject(),
-                    horasTrabajadas,
-                };
-            })
-        );
+        // Obtén las horas trabajadas de la semana filtrando por `idSemana`
+       
+        const horasTrabajadas = await HorasTrabajadas.find({ idSemana }).lean();
+        console.log(horasTrabajadas,"aaaaa");
+        // Vincula las horas trabajadas correspondientes a cada nómina
+        const result = nominas.map((nomina) => {
+        //    console.log(nomina.idEmpleado);
+            const horasEmpleado = horasTrabajadas.filter(
+                (hora) => hora.idEmpleado === nomina.idEmpleado
+            );
+            return {
+                ...nomina.toObject(),
+                horasTrabajadas: horasEmpleado,
+            };
+        });
 
         res.status(200).json(result);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error al obtener nóminas de la semana', error });
+    }
+};
+
+
+// REGRESA EL ARRAY DE NOMINAS CON SUS HORAS DIVIDIDO POR DIAS
+exports.obtenerNominasDeUnaSemanaConHorasPorDia = async (req, res) => {
+    const { idSemana } = req.params;
+
+    try {
+        // Encuentra todas las nóminas para la semana especificada
+        const nominas = await Nomina.find({ idSemana });
+
+        if (!nominas.length) {
+            return res.status(404).json({ message: 'No se encontraron nóminas para esta semana.' });
+        }
+
+        // Encuentra todas las horas trabajadas de la semana
+        const horasTrabajadas = await HorasTrabajadas.find({ idSemana }).lean();
+
+        // Verificar si las horas se han encontrado correctamente
+        if (!horasTrabajadas.length) {
+            return res.status(404).json({ message: 'No se encontraron horas trabajadas para esta semana.' });
+        }
+
+        // Agrupar las horas por día
+        const result = nominas.map((nomina) => {
+            // Filtra las horas trabajadas del empleado
+            const horasEmpleado = horasTrabajadas.filter(
+                (hora) => hora.idEmpleado.toString() === nomina.idEmpleado
+            );
+
+            // Agrupar las horas por `diaSemana`
+            const horasPorDia = horasEmpleado.reduce((acc, hora) => {
+                if (!acc[hora.diaSemana]) {
+                    acc[hora.diaSemana] = [];
+                }
+                acc[hora.diaSemana].push(hora);
+                return acc;
+            }, {});
+
+            return {
+                ...nomina.toObject(),
+                horasTrabajadas: horasPorDia, // Horas agrupadas por día
+            };
+        });
+
+        res.status(200).json(result);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error al obtener nóminas con horas por día', error });
+    }
+};
+
+
+
+// REGRESA EL ARRAY DE NOMINAS CON SUS HORAS DIVIDIDO POR DIAS Y PROYECTO
+exports.obtenerNominasDeUnaSemanaConHorasPorDiaYProyecto = async (req, res) => {
+    const { idSemana } = req.params;
+
+    try {
+        // Encuentra todas las nóminas para la semana especificada
+        const nominas = await Nomina.find({ idSemana });
+
+        if (!nominas.length) {
+            return res.status(404).json({ message: 'No se encontraron nóminas para esta semana.' });
+        }
+
+        // Encuentra todas las horas trabajadas de la semana
+        const horasTrabajadas = await HorasTrabajadas.find({ idSemana }).lean();
+
+        // Verificar si las horas se han encontrado correctamente
+        if (!horasTrabajadas.length) {
+            return res.status(404).json({ message: 'No se encontraron horas trabajadas para esta semana.' });
+        }
+
+        // Agrupar las horas por día y por proyecto
+        const result = nominas.map((nomina) => {
+            // Filtra las horas trabajadas del empleado
+            const horasEmpleado = horasTrabajadas.filter(
+                (hora) => hora.idEmpleado.toString() === nomina.idEmpleado
+            );
+
+            // Agrupar las horas por `diaSemana` y luego por `idProyecto`
+            const horasPorDiaYProyecto = horasEmpleado.reduce((acc, hora) => {
+                // Si no existe el día, inicializarlo
+                if (!acc[hora.diaSemana]) {
+                    acc[hora.diaSemana] = {};
+                }
+
+                // Si no existe el proyecto dentro del día, inicializarlo
+                if (!acc[hora.diaSemana][hora.idProyecto]) {
+                    acc[hora.diaSemana][hora.idProyecto] = {
+                        nombreProyecto: hora.nombreProyecto,
+                        horas: [],
+                    };
+                }
+
+                // Agregar la hora al proyecto correspondiente dentro del día
+                acc[hora.diaSemana][hora.idProyecto].horas.push(hora);
+
+                return acc;
+            }, {});
+
+            return {
+                ...nomina.toObject(),
+                horasTrabajadas: horasPorDiaYProyecto, // Horas agrupadas por día y proyecto con nombre del proyecto
+            };
+        });
+
+        res.status(200).json(result);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error al obtener nóminas con horas por día y proyecto', error });
     }
 };

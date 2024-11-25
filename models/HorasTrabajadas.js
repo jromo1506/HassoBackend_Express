@@ -8,12 +8,12 @@ const HorasTrabajadasSchema = new Schema({
         required: true
     },
     idProyecto: {
-        type: Schema.Types.ObjectId,
+        type: String,
         ref: 'Proyecto',
         required: true
     },
     idEmpleado: {
-        type: Schema.Types.ObjectId,
+        type: String,
         ref: 'Empleado',
         required: true
     },
