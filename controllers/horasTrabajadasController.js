@@ -1,4 +1,5 @@
 const HorasTrabajadas = require('../models/HorasTrabajadas.js');
+const Nomina = require('../models/Nomina.js')
 const express = require('express');
 const router = express.Router();
 
@@ -137,6 +138,95 @@ exports.getHorasBySemana = (req, res) => {
             console.error("Error al obtener las horas:", error);
             res.status(500).json({ error: 'Error al obtener las horas trabajadas' });
         });
+};
+
+
+
+
+// NUEVAS FUNCIONES DE NOMINAS
+
+exports.darDeAltaHorasRegularesExtras = async (req, res) => {
+    const {
+        idSemana,
+        idProyecto,
+        idEmpleado,
+        nombreProyecto,
+        nombreEmpleado,
+        horasTrabajadas,
+        fecha,
+        diaSemana,
+    } = req.body;
+
+    try {
+        console.log({ idSemana, idEmpleado },"Nomina");
+        // Busca la nómina del empleado para la semana especificada
+        const nomina = await Nomina.findOne({ idSemana, idEmpleado });
+
+        if (!nomina) {
+            return res.status(404).json({ message: 'Nómina no encontrada para el empleado y la semana especificados.' });
+        }
+
+        const horasFaltantes = nomina.horasFaltantes;
+
+        if (horasTrabajadas <= horasFaltantes) {
+            // Caso 1: Las horas trabajadas caben dentro de las horas faltantes
+            await HorasTrabajadas.create({
+                idSemana,
+                idProyecto,
+                idEmpleado,
+                nombreProyecto,
+                nombreEmpleado,
+                horasTrabajadas,
+                fecha,
+                diaSemana,
+                sonHorasExtra: false,
+            });
+
+            // Actualiza las horas faltantes en la nómina
+            nomina.horasFaltantes -= horasTrabajadas;
+            await nomina.save();
+
+        } else {
+            // Caso 2: Las horas trabajadas exceden las horas faltantes
+            const horasRegulares = horasFaltantes;
+            const horasExtras = horasTrabajadas - horasFaltantes;
+
+            // Alta para las horas regulares
+            await HorasTrabajadas.create({
+                idSemana,
+                idProyecto,
+                idEmpleado,
+                nombreProyecto,
+                nombreEmpleado,
+                horasTrabajadas: horasRegulares,
+                fecha,
+                diaSemana,
+                sonHorasExtra: false,
+            });
+
+            // Alta para las horas extras
+            await HorasTrabajadas.create({
+                idSemana,
+                idProyecto,
+                idEmpleado,
+                nombreProyecto,
+                nombreEmpleado,
+                horasTrabajadas: horasExtras,
+                fecha,
+                diaSemana,
+                sonHorasExtra: true,
+            });
+
+            // Actualiza las horas faltantes en la nómina a 0
+            nomina.horasFaltantes = 0;
+            await nomina.save();
+        }
+
+        res.status(201).json({ message: 'Horas trabajadas registradas correctamente.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error al registrar las horas trabajadas.', error });
+    }
 };
 
 

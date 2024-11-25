@@ -156,3 +156,39 @@ exports.eliminarNominasHorasYSemana = async (req, res) => {
         });
     }
 };
+
+
+
+exports.obtenerNominasDeUnaSemanaJuntoConSusHoras = async (req, res) => {
+    const { idSemana } = req.params; // Recibe el ID de la semana como parámetro
+
+    try {
+        // Encuentra la semana por ID
+        const semana = await Semana.findById(idSemana).populate('idHorasTrabajadas');
+
+        if (!semana) {
+            return res.status(404).json({ message: 'Semana no encontrada' });
+        }
+
+        // Encuentra todas las nóminas relacionadas con esta semana
+        const nominas = await Nomina.find({ idSemana: semana._id });
+
+        // Agrega las horas trabajadas correspondientes a cada nómina
+        const result = await Promise.all(
+            nominas.map(async (nomina) => {
+                const horasTrabajadas = semana.idHorasTrabajadas.filter(
+                    (hora) => hora.idEmpleado.toString() === nomina.idEmpleado
+                );
+                return {
+                    ...nomina.toObject(),
+                    horasTrabajadas,
+                };
+            })
+        );
+
+        res.status(200).json(result);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error al obtener nóminas de la semana', error });
+    }
+};
