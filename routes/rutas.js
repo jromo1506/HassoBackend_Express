@@ -61,10 +61,10 @@ router.delete('/eliminaNominasHoras/:idSemana',semanaController.eliminarNominasH
 
 // Nuevas funciones de nominas
 router.get('/ObtenerNominasHorasDeSemanaSinFormato/:idSemana',semanaController.obtenerNominasDeUnaSemanaJuntoConSusHoras);
-router.get('/ObtenerNominasHorasDeSemanaSeparadasPorDia/:idSemana',semanaController.obtenerNominasDeUnaSemanaConHorasPorDia);
+// router.get('/ObtenerNominasHorasDeSemanaSeparadasPorDia/:idSemana',semanaController.obtenerNominasDeUnaSemanaConHorasPorDia);
 
 // Separadas por proyecto
-router.get('/ObtenerNominasHorasDeSemana/:idSemana',semanaController.obtenerNominasDeUnaSemanaConHorasPorDiaYProyecto);
+router.get('/ObtenerNominasHorasDeSemana/:idSemana',semanaController.obtenerNominasDeUnaSemanaConHorasPorDia);
 
 
 // USUARIOS
@@ -146,6 +146,8 @@ router.get('/nominas/:idSemana/:idEmpleado', nominaController.getNominaById);
 router.put('/nominas/:idSemana/:idEmpleado', nominaController.updateNomina);
 router.delete('/nominas/:idSemana/:idEmpleado', nominaController.deleteNomina);
 router.post('/nominaExtemporanea',nominaController.verificarOCrearNomina);
+router.get('/getNominaByIdNomina/:id',nominaController.getNominaByIdNomina);
+
 // CLIENTE
 router.post('/cliente', clienteController.crearCliente);
 router.get('/cliente', clienteController.obtenerClientes);

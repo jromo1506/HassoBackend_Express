@@ -8,6 +8,17 @@ const Nomina = require('../models/Nomina');
 // Crear una nueva nómina
 exports.createNomina = async (req, res) => {
     try {
+        const { idEmpleado } = req.body;
+
+        // Verificar si ya existe una nómina con el mismo idEmpleado
+        const existeNomina = await Nomina.findOne({ idEmpleado });
+        if (existeNomina) {
+            return res.status(400).json({
+                message: 'Ya existe una nómina registrada para este empleado',
+            });
+        }
+
+        // Crear la nueva nómina si no existe
         const nuevaNomina = new Nomina(req.body);
         const nominaGuardada = await nuevaNomina.save();
         res.status(201).json(nominaGuardada);
@@ -107,3 +118,19 @@ exports.getNominasBySemana = async (req, res) => {
         res.status(500).json({ message: 'Error al obtener las nóminas', error });
     }
 };
+
+
+// NUEVAS FUNCIONES NOMINAS
+
+exports.getNominaByIdNomina = async(req,res)=>{
+    try{
+        const nomina = await Nomina.findById(req.params.id);
+        if (!nomina) {
+            return res.status(404).json({ message: 'Nomina not found' });
+        }
+        res.status(200).json(nomina);
+    }
+    catch(error){
+        res.status(500).json({ message: 'Error al obtener las nóminas', error });
+    }
+}
