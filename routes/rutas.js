@@ -50,6 +50,8 @@ router.get('/obtenerHorasSemana/:idSemana', horasTrabajadasController.getHorasBy
 router.post('/darDeAltaHorasRegExtras',horasTrabajadasController.darDeAltaHorasRegularesExtras);
 router.delete('/deleteHorasValidandoSiHayxtras/:id', horasTrabajadasController.deleteHorasValidandoSiHayExtras)
 
+
+
 // SEMANA
 router.post('/semanas', semanaController.createSemanaDebug);
 router.get('/semanas', semanaController.getSemanas);
@@ -61,10 +63,11 @@ router.delete('/eliminaNominasHoras/:idSemana',semanaController.eliminarNominasH
 
 // Nuevas funciones de nominas
 router.get('/ObtenerNominasHorasDeSemanaSinFormato/:idSemana',semanaController.obtenerNominasDeUnaSemanaJuntoConSusHoras);
+router.get('/ObtenerNominasHorasDeSemana/:idSemana',semanaController.obtenerNominasDeUnaSemanaConHorasPorDia);
+
+
 // router.get('/ObtenerNominasHorasDeSemanaSeparadasPorDia/:idSemana',semanaController.obtenerNominasDeUnaSemanaConHorasPorDia);
 
-// Separadas por proyecto
-router.get('/ObtenerNominasHorasDeSemana/:idSemana',semanaController.obtenerNominasDeUnaSemanaConHorasPorDia);
 
 
 // USUARIOS

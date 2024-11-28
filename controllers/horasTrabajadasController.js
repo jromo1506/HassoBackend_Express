@@ -308,3 +308,25 @@ exports.deleteHorasValidandoSiHayExtras = async (req, res) => {
       res.status(500).json({ mensaje: 'Error del servidor', error });
     }
   };
+
+
+
+exports.getHorasTrabajadasByNomina = async (req, res) => {
+    try {
+        const { idSemana, idEmpleado } = req.params;
+
+        // Buscar todas las horas trabajadas para un empleado en una semana específica
+        const horasTrabajadas = await HorasTrabajadas.find({ idSemana, idEmpleado });
+
+        if (horasTrabajadas.length === 0) {
+            return res.status(404).json({ message: 'No se encontraron horas trabajadas para la nómina especificada' });
+        }
+
+        res.status(200).json({
+            message: 'Horas trabajadas encontradas',
+            horasTrabajadas
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener las horas trabajadas', error });
+    }
+};
