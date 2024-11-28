@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
+
 const {Schema } = mongoose;
 
 
 
 const Nomina = require('../models/Nomina');
-
+const HorasTrabajadas = require('../models/HorasTrabajadas');
 // Crear una nueva nómina
 exports.createNomina = async (req, res) => {
     try {
