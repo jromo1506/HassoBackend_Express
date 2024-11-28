@@ -96,6 +96,7 @@ exports.updateNomina = async (req, res) => {
 
 exports.deleteNomina = async (req, res) => {
     try {
+        console.log("SE VA A ELIMINAR");
         const { idSemana, idEmpleado } = req.params;
 
         // Eliminar la nómina correspondiente
@@ -104,8 +105,16 @@ exports.deleteNomina = async (req, res) => {
             return res.status(404).json({ message: 'Nómina no encontrada' });
         }
 
+        const horasExistentes = await HorasTrabajadas.find({
+            idSemana: String(idSemana),
+            idEmpleado: String(idEmpleado)
+        });
+        console.log('Horas encontradas antes de eliminar:', horasExistentes);
         // Eliminar todas las horas trabajadas correspondientes a la misma idSemana y idEmpleado
-        const horasEliminadas = await HorasTrabajadas.deleteMany({ idSemana, idEmpleado });
+        const horasEliminadas = await HorasTrabajadas.deleteMany({
+            idSemana: String(idSemana),
+            idEmpleado: String(idEmpleado)
+        });
 
         res.status(200).json({ 
             message: 'Nómina y horas trabajadas eliminadas correctamente',
