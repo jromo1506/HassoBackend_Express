@@ -253,3 +253,58 @@ exports.darDeAltaHorasRegularesExtras = async (req, res) => {
         res.status(500).json({ message: 'Error al registrar las horas trabajadas.', error });
     }
 };
+
+
+
+
+
+// Delete horas con validacion de si hay extras o no
+
+exports.deleteHorasValidandoSiHayExtras = async (req, res) => {
+    const { id } = req.params; // ID de la hora que se desea eliminar
+  
+    try {
+      // Buscar la hora a eliminar
+      const hora = await HorasTrabajadas.findById(id);
+      if (!hora) {
+        return res.status(404).json({ mensaje: 'Hora no encontrada' });
+      }
+  
+      // Buscar la nómina correspondiente
+      const nomina = await Nomina.findOne({
+        idSemana: hora.idSemana,
+        idEmpleado: hora.idEmpleado
+      });
+  
+      if (!nomina) {
+        return res.status(404).json({ mensaje: 'Nómina no encontrada' });
+      }
+  
+      // Verificar si existen horas extras
+      const horasExtras = await HorasTrabajadas.find({
+        idSemana: hora.idSemana,
+        idEmpleado: hora.idEmpleado,
+        sonHorasExtra: true
+      });
+  
+      if (horasExtras.length > 0) {
+        // Si existen horas extras
+        if (!hora.sonHorasExtra) {
+          return res.status(400).json({
+            mensaje: 'No se puede eliminar una hora regular si existen horas extras registradas.'
+          });
+        }
+      } else {
+        // Si no existen horas extras
+        nomina.horasFaltantes += hora.horasTrabajadas; // Sumar horas trabajadas de nuevo a horas faltantes
+        await nomina.save();
+      }
+  
+      // Si se cumplen las condiciones, eliminar la hora
+      await HorasTrabajadas.findByIdAndDelete(id);
+      res.status(200).json({ mensaje: 'Hora eliminada correctamente' });
+    } catch (error) {
+      console.error('Error al eliminar la hora:', error);
+      res.status(500).json({ mensaje: 'Error del servidor', error });
+    }
+  };

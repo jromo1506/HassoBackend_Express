@@ -208,12 +208,7 @@ exports.obtenerNominasDeUnaSemanaConHorasPorDia = async (req, res) => {
         // Encuentra todas las horas trabajadas de la semana
         const horasTrabajadas = await HorasTrabajadas.find({ idSemana }).lean();
 
-        // Verificar si las horas se han encontrado correctamente
-        if (!horasTrabajadas.length) {
-            return res.status(404).json({ message: 'No se encontraron horas trabajadas para esta semana.' });
-        }
-
-        // Agrupar las horas por día
+        // Agrupar las horas por día para cada nómina, dejando vacío si no hay horas
         const result = nominas.map((nomina) => {
             // Filtra las horas trabajadas del empleado
             const horasEmpleado = horasTrabajadas.filter(
@@ -231,7 +226,7 @@ exports.obtenerNominasDeUnaSemanaConHorasPorDia = async (req, res) => {
 
             return {
                 ...nomina.toObject(),
-                horasTrabajadas: horasPorDia, // Horas agrupadas por día
+                horasTrabajadas: horasPorDia, // Horas agrupadas por día o vacío si no hay horas
             };
         });
 

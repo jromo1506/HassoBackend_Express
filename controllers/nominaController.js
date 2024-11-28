@@ -8,13 +8,13 @@ const Nomina = require('../models/Nomina');
 // Crear una nueva nómina
 exports.createNomina = async (req, res) => {
     try {
-        const { idEmpleado } = req.body;
+        const { idEmpleado, idSemana } = req.body;
 
-        // Verificar si ya existe una nómina con el mismo idEmpleado
-        const existeNomina = await Nomina.findOne({ idEmpleado });
+        // Verificar si ya existe una nómina con el mismo idEmpleado y idSemana
+        const existeNomina = await Nomina.findOne({ idEmpleado, idSemana });
         if (existeNomina) {
             return res.status(400).json({
-                message: 'Ya existe una nómina registrada para este empleado',
+                message: 'Ya existe una nómina registrada para este empleado en esta semana',
             });
         }
 
@@ -92,16 +92,29 @@ exports.updateNomina = async (req, res) => {
 };
 
 // Eliminar una nómina por ID
+
 exports.deleteNomina = async (req, res) => {
     try {
         const { idSemana, idEmpleado } = req.params;
+
+        // Eliminar la nómina correspondiente
         const nominaEliminada = await Nomina.findOneAndDelete({ idSemana, idEmpleado });
         if (!nominaEliminada) {
             return res.status(404).json({ message: 'Nómina no encontrada' });
         }
-        res.status(200).json({ message: 'Nómina eliminada correctamente' });
+
+        // Eliminar todas las horas trabajadas correspondientes a la misma idSemana y idEmpleado
+        const horasEliminadas = await HorasTrabajadas.deleteMany({ idSemana, idEmpleado });
+
+        res.status(200).json({ 
+            message: 'Nómina y horas trabajadas eliminadas correctamente',
+            detalles: {
+                nominaEliminada,
+                horasEliminadas: horasEliminadas.deletedCount // Cantidad de documentos eliminados
+            }
+        });
     } catch (error) {
-        res.status(500).json({ message: 'Error al eliminar la nómina', error });
+        res.status(500).json({ message: 'Error al eliminar la nómina y horas trabajadas', error });
     }
 };
 
@@ -132,5 +145,27 @@ exports.getNominaByIdNomina = async(req,res)=>{
     }
     catch(error){
         res.status(500).json({ message: 'Error al obtener las nóminas', error });
+    }
+}
+
+exports.putNominaByIdNomina = async(req,res)=>{
+    const { id } = req.params; // Obtener el _id de la URL
+    const nuevosCampos = req.body; // Obtener los campos a actualizar desde el cuerpo de la solicitud
+  
+    try {
+      const nominaActualizada = await Nomina.findByIdAndUpdate(
+        id,
+        { $set: nuevosCampos }, // Actualizar solo los campos especificados
+        { new: true, runValidators: true } // Retorna el documento actualizado y valida
+      );
+  
+      if (!nominaActualizada) {
+        return res.status(404).json({ mensaje: 'Nómina no encontrada' });
+      }
+  
+      res.status(200).json(nominaActualizada);
+    } catch (error) {
+      console.error('Error al actualizar la nómina:', error);
+      res.status(500).json({ mensaje: 'Error al actualizar la nómina', error });
     }
 }
