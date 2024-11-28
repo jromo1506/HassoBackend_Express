@@ -308,3 +308,91 @@ exports.deleteHorasValidandoSiHayExtras = async (req, res) => {
       res.status(500).json({ mensaje: 'Error del servidor', error });
     }
   };
+
+  exports.calcularTotalNomina = async (req, res) => {
+    const { idSemana, idEmpleado } = req.params;
+
+    try {
+        // Buscar la nómina
+        const nomina = await Nomina.findOne({ idSemana, idEmpleado });
+        if (!nomina) {
+            return res.status(404).json({ message: 'Nómina no encontrada para esta semana y empleado.' });
+        }
+
+        // Obtener las horas trabajadas
+        const horasTrabajadas = await HorasTrabajadas.find({ idSemana, idEmpleado });
+        if (!horasTrabajadas.length) {
+            return res.status(404).json({ message: 'No se encontraron horas trabajadas.' });
+        }
+
+        // Calcular el total de horas trabajadas
+        let totalHoras = 0;
+        horasTrabajadas.forEach(hora => {
+            const pagoHora = hora.sonHorasExtra ? nomina.sueldoHora * 2 : nomina.sueldoHora;
+            totalHoras += hora.horasTrabajadas * pagoHora;
+        });
+
+        // Sumar total de horas trabajadas con finiquito y sobresueldo
+        const totalNomina = totalHoras + nomina.finiquito + nomina.sobreSueldo;
+
+        // Calcular lesDoy: totalNomina + prestamo - abonan - pension
+        const lesDoy = totalNomina + nomina.prestamo - nomina.abonan - nomina.pension;
+
+        // Calcular dispEfectivo: lesDoy - nominaFiscal
+        const dispEfectivo = lesDoy - nomina.nominaFiscal;
+
+        // Actualizar la nómina con los nuevos cálculos
+        nomina.totalNomina = totalNomina;
+        nomina.lesDoy = lesDoy;
+        nomina.dispEfectivo = dispEfectivo;
+
+        await nomina.save();
+
+        return res.status(200).json({ 
+            message: 'Nómina calculada y actualizada correctamente.', 
+            totalNomina,
+            lesDoy,
+            dispEfectivo 
+        });
+
+    } catch (error) {
+        console.error('Error al calcular la nómina:', error);
+        return res.status(500).json({ message: 'Error al calcular la nómina.', error });
+    }
+};
+
+
+
+exports.obtenerPagoTotalHoras = async (req, res) => {
+    const { idSemana, idEmpleado } = req.params;
+
+    try {
+        // Obtener la nómina correspondiente
+        const nomina = await Nomina.findOne({ idSemana, idEmpleado });
+        if (!nomina) {
+            return res.status(404).json({ message: 'Nómina no encontrada para esta semana y empleado.' });
+        }
+
+        // Obtener las horas trabajadas para la semana y empleado específicos
+        const horasTrabajadas = await HorasTrabajadas.find({ idSemana, idEmpleado });
+        if (!horasTrabajadas.length) {
+            return res.status(404).json({ message: 'No se encontraron horas trabajadas.' });
+        }
+
+        // Calcular el total del pago por las horas trabajadas
+        const pagoTotal = horasTrabajadas.reduce((total, hora) => {
+            const pagoHora = hora.sonHorasExtra ? nomina.sueldoHora * 2 : nomina.sueldoHora;
+            return total + (hora.horasTrabajadas * pagoHora);
+        }, 0);
+
+        return res.status(200).json({
+            message: 'Pago total por las horas trabajadas calculado correctamente.',
+            pagoTotal
+        });
+
+    } catch (error) {
+        console.error('Error al calcular el pago total por las horas trabajadas:', error);
+        return res.status(500).json({ message: 'Error al calcular el pago total.', error });
+    }
+};
+

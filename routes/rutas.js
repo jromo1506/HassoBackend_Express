@@ -49,6 +49,9 @@ router.get('/obtenerHorasMesAnio/:mes/:ano', horasTrabajadasController.getHorasP
 router.get('/obtenerHorasSemana/:idSemana', horasTrabajadasController.getHorasBySemana);
 router.post('/darDeAltaHorasRegExtras',horasTrabajadasController.darDeAltaHorasRegularesExtras);
 router.delete('/deleteHorasValidandoSiHayxtras/:id', horasTrabajadasController.deleteHorasValidandoSiHayExtras)
+router.put('/calcularNomina/:idSemana/:idEmpleado',horasTrabajadasController.calcularTotalNomina);
+router.get('/obtenerSumaHoras/:idSemana/:idEmpleado',horasTrabajadasController.obtenerPagoTotalHoras);
+
 
 // SEMANA
 router.post('/semanas', semanaController.createSemanaDebug);
@@ -148,6 +151,7 @@ router.delete('/nominas/:idSemana/:idEmpleado', nominaController.deleteNomina);
 router.post('/nominaExtemporanea',nominaController.verificarOCrearNomina);
 router.get('/getNominaByIdNomina/:id',nominaController.getNominaByIdNomina);
 router.put('/putNominaByIdNomina/:id',nominaController.putNominaByIdNomina);
+router.put('/alternarCalculado/:idNomina',nominaController.alternarCalculadoNomina);
 
 // CLIENTE
 router.post('/cliente', clienteController.crearCliente);

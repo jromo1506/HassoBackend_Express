@@ -169,3 +169,29 @@ exports.putNominaByIdNomina = async(req,res)=>{
       res.status(500).json({ mensaje: 'Error al actualizar la nómina', error });
     }
 }
+
+
+
+exports.alternarCalculadoNomina = async (req, res) => {
+    const { idNomina } = req.params;
+
+    try {
+        // Buscar la nómina por _id
+        const nomina = await Nomina.findById(idNomina);
+        if (!nomina) {
+            return res.status(404).json({ message: 'Nómina no encontrada.' });
+        }
+
+        // Alternar el valor de 'calculado'
+        nomina.calculado = !nomina.calculado;
+        await nomina.save();
+
+        return res.status(200).json({
+            message: 'Estado de calculado alternado correctamente.',
+            calculado: nomina.calculado
+        });
+    } catch (error) {
+        console.error('Error al alternar el estado de calculado:', error);
+        return res.status(500).json({ message: 'Error al alternar el estado de calculado.', error });
+    }
+};
