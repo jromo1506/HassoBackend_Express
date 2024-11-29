@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const Empleado = require('../models/Empleado');
 const {Schema } = mongoose;
 
 
@@ -57,7 +57,7 @@ exports.getNominas = async (req, res) => {
         res.status(200).json(nominas);
     } catch (error) {
         res.status(500).json({ message: 'Error al obtener las nóminas', error });
-    }
+    }   
 };
 
 // Obtener una nómina por ID
@@ -157,28 +157,51 @@ exports.getNominaByIdNomina = async(req,res)=>{
         res.status(500).json({ message: 'Error al obtener las nóminas', error });
     }
 }
-
-exports.putNominaByIdNomina = async(req,res)=>{
-    const { id } = req.params; // Obtener el _id de la URL
+exports.putNominaByIdNomina = async (req, res) => {
+    const { id } = req.params; // Obtener el _id de la nómina desde la URL
     const nuevosCampos = req.body; // Obtener los campos a actualizar desde el cuerpo de la solicitud
-  
+
     try {
-      const nominaActualizada = await Nomina.findByIdAndUpdate(
-        id,
-        { $set: nuevosCampos }, // Actualizar solo los campos especificados
-        { new: true, runValidators: true } // Retorna el documento actualizado y valida
-      );
-  
-      if (!nominaActualizada) {
-        return res.status(404).json({ mensaje: 'Nómina no encontrada' });
-      }
-  
-      res.status(200).json(nominaActualizada);
+        // Actualizar la nómina
+        const nominaActualizada = await Nomina.findByIdAndUpdate(
+            id,
+            { $set: nuevosCampos }, // Actualizar solo los campos especificados
+            { new: true, runValidators: true } // Retorna el documento actualizado y valida
+        );
+
+        if (!nominaActualizada) {
+            return res.status(404).json({ mensaje: 'Nómina no encontrada' });
+        }
+
+        // Buscar el empleado asociado a la nómina
+        const empleado = await Empleado.findById(nominaActualizada.idEmpleado);
+        if (!empleado) {
+            return res.status(404).json({ mensaje: 'Empleado no encontrado' });
+        }
+
+        // Sumar prestamo a deuda actual
+        // empleado.deuda += nuevosCampos.prestamo || 0;
+
+        // Sustituir abono por el nuevo valor
+        empleado.abono = nuevosCampos.abonan || 0;
+
+        // Sustituir sumaDeuda con el prestamo de la nomina
+        empleado.sumaDeuda = nuevosCampos.prestamo || 0;
+
+        // Guardar los cambios en el empleado
+        await empleado.save();
+
+        res.status(200).json({ 
+            mensaje: 'Nómina y datos del empleado actualizados con éxito.', 
+            nomina: nominaActualizada,
+            empleado
+        });
     } catch (error) {
-      console.error('Error al actualizar la nómina:', error);
-      res.status(500).json({ mensaje: 'Error al actualizar la nómina', error });
+        console.error('Error al actualizar la nómina:', error);
+        res.status(500).json({ mensaje: 'Error al actualizar la nómina', error });
     }
-}
+};
+
 
 
 
@@ -205,3 +228,5 @@ exports.alternarCalculadoNomina = async (req, res) => {
         return res.status(500).json({ message: 'Error al alternar el estado de calculado.', error });
     }
 };
+
+

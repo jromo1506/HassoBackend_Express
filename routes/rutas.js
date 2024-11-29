@@ -67,7 +67,7 @@ router.delete('/eliminaNominasHoras/:idSemana',semanaController.eliminarNominasH
 // Nuevas funciones de nominas
 router.get('/ObtenerNominasHorasDeSemanaSinFormato/:idSemana',semanaController.obtenerNominasDeUnaSemanaJuntoConSusHoras);
 router.get('/ObtenerNominasHorasDeSemana/:idSemana',semanaController.obtenerNominasDeUnaSemanaConHorasPorDia);
-
+router.post('/creaSemanaYNominas',semanaController.crearSemanaYNominas);
 
 // router.get('/ObtenerNominasHorasDeSemanaSeparadasPorDia/:idSemana',semanaController.obtenerNominasDeUnaSemanaConHorasPorDia);
 

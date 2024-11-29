@@ -1,8 +1,13 @@
 const Semana = require('../models/Semana');
 const Nomina = require('../models/Nomina'); // Asegúrate de tener este modelo
+const Empleado = require('../models/Empleado');
 const HorasTrabajadas = require('../models/HorasTrabajadas');
 const express = require('express');
+const moment = require('moment');
+const { format, subDays, nextFriday } = require('date-fns');
+
 const router = express.Router();
+
 
 
 // Crear una nueva semana
@@ -299,5 +304,72 @@ exports.obtenerNominasDeUnaSemanaConHorasPorDiaYProyecto = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error al obtener nóminas con horas por día y proyecto', error });
+    }
+};
+
+
+// Crea las semanas
+// Crea las nominas por empleados
+// Evita empleados despedidos
+// Realiza la suma de deudas abunos y sumaDeudas para guardarla en caa nomina
+exports.crearSemanaYNominas = async (req, res) => {
+    console.log("info");
+    try {
+        // Calcular fechas
+        const fechaInicio = moment().day(-2).format('YYYY-MM-DD'); // Viernes pasado
+        const fechaTermino = moment().day(5).format('YYYY-MM-DD');  // Viernes de esta semana
+
+        // Verificar si ya existe una semana con las mismas fechas
+        const semanaExistente = await Semana.findOne({ fechaInicio, fechaTermino });
+        if (semanaExistente) {
+            return res.status(400).json({ message: 'Ya existe una semana con estas fechas.' });
+        }
+
+        // Crear nueva semana
+        const nuevaSemana = new Semana({
+            fechaInicio,
+            fechaTermino,
+            idHorasTrabajadas: [], // Inicialmente vacío
+        });
+
+        await nuevaSemana.save();
+
+        // Obtener todos los empleados que no están despedidos
+        const empleados = await Empleado.find({ despedido: false });
+
+        // Crear nómina para cada empleado no despedido
+        const nominas = empleados.map(async (empleado) => {
+            // Calculamos la deuda como sumaDeuda - abono
+            const deuda = (empleado.sumaDeuda || 0) - (empleado.abono || 0);
+
+            // Crear la nueva nómina
+            const nuevaNomina = new Nomina({
+                idSemana: nuevaSemana._id,
+                idEmpleado: empleado._id,
+                nombreEmpleado: `${empleado.nombre} ${empleado.apePat} ${empleado.apeMat}`,
+                sueldoHora: empleado.pago,
+                banco: empleado.banco,
+                cuenta: empleado.cuenta,
+                tarjeta: empleado.tarjeta,
+                deben: deuda // Guardar la deuda calculada
+            });
+
+            // Actualizar la deuda en el empleado
+            await Empleado.findByIdAndUpdate(
+                empleado._id,
+                { deuda: deuda }, // Sustituimos la deuda del empleado con la deuda calculada
+                { new: true }
+            );
+
+            // Guardar la nómina en la base de datos
+            return nuevaNomina.save();
+        });
+
+        await Promise.all(nominas); // Espera que todas las nóminas sean creadas.
+
+        return res.status(201).json({ message: 'Semana y nóminas creadas con éxito.' });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Error al crear semana y nóminas.', error });
     }
 };
