@@ -230,3 +230,32 @@ exports.alternarCalculadoNomina = async (req, res) => {
 };
 
 
+exports.obtenerPrestamosAbonos = async (req, res) => {
+    const { idSemana } = req.params; // Obtenemos idSemana desde los query params
+
+    if (!idSemana) {
+        return res.status(400).json({ error: 'El parámetro idSemana es requerido' });
+    }
+
+    try {
+        const resultado = await Nomina.aggregate([
+            {
+                $match: { idSemana } // Filtrar por idSemana
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalAbonos: { $sum: "$abonan" },
+                    totalPrestamos: { $sum: "$prestamo" }
+                }
+            }
+        ]);
+
+        const sumas = resultado[0] || { totalAbonos: 0, totalPrestamos: 0 };
+        res.json(sumas); // Devolvemos el resultado en formato JSON
+    } catch (error) {
+        console.error("Error al obtener sumas:", error);
+        res.status(500).json({ error: 'Error en el servidor' });
+    }
+}
+

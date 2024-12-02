@@ -156,6 +156,8 @@ router.post('/nominaExtemporanea',nominaController.verificarOCrearNomina);
 router.get('/getNominaByIdNomina/:id',nominaController.getNominaByIdNomina);
 router.put('/putNominaByIdNomina/:id',nominaController.putNominaByIdNomina);
 router.put('/alternarCalculado/:idNomina',nominaController.alternarCalculadoNomina);
+router.get('/obtenerPrestamosAbonos/:idSemana',nominaController.obtenerPrestamosAbonos);
+
 
 // CLIENTE
 router.post('/cliente', clienteController.crearCliente);
