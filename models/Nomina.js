@@ -13,6 +13,10 @@ const NominaSchema = new Schema({
     
         required: true
     },
+    idEmp:{
+        type:Number,
+        required:true
+    },
 
 
     nombreEmpleado: {

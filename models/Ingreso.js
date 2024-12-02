@@ -49,6 +49,10 @@ const IngresoSchema = new Schema({
         type: String,
         required: true
     },
+    formaDePago:{
+        type:String,
+        required:true
+    },
     pedido: {
         type: String,
         required: true

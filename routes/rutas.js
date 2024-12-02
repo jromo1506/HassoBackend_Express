@@ -123,6 +123,7 @@ router.delete('/gasto/:id', gastoController.eliminarGasto);
 router.get('/gastosHojas/:id', gastoController.getGastoByHojaContable);
 router.post('/importarGastos', gastoController.importarGastos);
 router.post('/checarGastosDup',gastoController.checarDuplicados);
+router.post('/verificarGastosImportados',gastoController.verificarSiNoHayUnImportadoDuplicado);
 
 
 // INGRESOS

@@ -174,3 +174,56 @@ exports.createGastoValidarRFC = async (req, res) => {
 
 
 
+exports.verificarSiNoHayUnImportadoDuplicado = async (req, res) => {
+    const gastosArray = req.body;
+
+    try {
+        // Agrupar los gastos por idHojaContable
+        const groupedByHojaContable = gastosArray.reduce((acc, gasto) => {
+            if (!acc[gasto.idHojaContable]) {
+                acc[gasto.idHojaContable] = [];
+            }
+            acc[gasto.idHojaContable].push(gasto);
+            return acc;
+        }, {});
+
+        let duplicadosGlobal = [];
+
+        for (const [idHojaContable, gastos] of Object.entries(groupedByHojaContable)) {
+            // Buscar duplicados en la base de datos por RFC o factura dentro del mismo idHojaContable
+            const duplicados = await Gasto.find({
+                idHojaContable: idHojaContable,
+                $or: gastos.map(gasto => ({
+                    $or: [
+                        { RFC: gasto.RFC },
+                        { factura: gasto.factura }
+                    ]
+                }))
+            });
+
+            if (duplicados.length > 0) {
+                duplicadosGlobal.push(...duplicados.map(dup => ({
+                    idHojaContable: dup.idHojaContable,
+                    RFC: dup.RFC,
+                    factura: dup.factura
+                })));
+            }
+        }
+
+        if (duplicadosGlobal.length > 0) {
+            return res.status(400).json({
+                message: 'Se encontraron registros duplicados dentro del mismo idHojaContable.',
+                duplicados: duplicadosGlobal
+            });
+        }
+
+        // Si no hay duplicados, insertar los nuevos documentos
+        const result = await Gasto.insertMany(gastosArray);
+        res.status(201).json({ message: 'Gastos agregados exitosamente', data: result });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al agregar gastos', error: error.message });
+    }
+};
+
+
+

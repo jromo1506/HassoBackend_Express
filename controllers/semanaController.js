@@ -346,6 +346,7 @@ exports.crearSemanaYNominas = async (req, res) => {
             const nuevaNomina = new Nomina({
                 idSemana: nuevaSemana._id,
                 idEmpleado: empleado._id,
+                idEmp:empleado.idEmp,
                 nombreEmpleado: `${empleado.nombre} ${empleado.apePat} ${empleado.apeMat}`,
                 sueldoHora: empleado.pago,
                 banco: empleado.banco,
