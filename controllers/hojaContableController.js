@@ -26,7 +26,8 @@ exports.obtenerHojasContables = async (req, res) => {
 // Obtener una Hoja Contable por ID
 exports.obtenerHojaContablePorId = async (req, res) => {
     try {
-        const hoja = await HojaContable.findById(req.params.id).populate('fechaHoja');
+        const hoja = await HojaContable.findById(req.params.id);
+        console.log(hoja,"HOJA CONTABLE");
         if (!hoja) {
             return res.status(404).json({ error: 'Hoja Contable no encontrada' });
         }

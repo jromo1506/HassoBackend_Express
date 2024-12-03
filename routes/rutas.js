@@ -15,6 +15,8 @@ const proveedorController = require('../controllers/proveedorController');
 const nominaController = require('../controllers/nominaController');
 const clienteController = require('../controllers/clienteController');
 const solicitudController = require('../controllers/solicitudController');
+const anualidadController = require('../controllers/anualidadController');
+
 
 // EMPLEADO
 router.post('/empleados', empleadoController.createEmpleado);
@@ -52,6 +54,15 @@ router.delete('/deleteHorasValidandoSiHayxtras/:id', horasTrabajadasController.d
 router.put('/calcularNomina/:idSemana/:idEmpleado',horasTrabajadasController.calcularTotalNomina);
 router.get('/obtenerSumaHoras/:idSemana/:idEmpleado',horasTrabajadasController.obtenerPagoTotalHoras);
 
+
+
+// ANNO
+router.post('/annos',anualidadController.createAnno);
+router.get('/annos', anualidadController.getAllAnnos);
+router.get('/annos/:id', anualidadController.getAnnoById);
+router.put('/annos/:id', anualidadController.updateAnno);
+router.delete('/annos/:id', anualidadController.deleteAnno);
+router.get('/calcularTotalAnio/:anio',anualidadController.calcularTotalesAnno);
 
 
 

@@ -8,6 +8,14 @@ const HojaContableSchema = new Schema({
         type: String,
         required: true
     },
+    mes:{
+        type:String,
+        required:true
+    },
+    anio:{
+        type:Number,
+        required:true
+    },
     /*fechaHoja: {
         type: Schema.Types.ObjectId,
         ref: 'Usuario',
@@ -23,14 +31,7 @@ const HojaContableSchema = new Schema({
         ref: 'Usuario',
         required: false
     },
-    mes:{
-        type:String,
-        required:true
-    },
-    anio:{
-        type:Number,
-        required:true
-    }
+  
 });
 
 
