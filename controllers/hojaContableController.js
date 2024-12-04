@@ -1,5 +1,8 @@
 const HojaContable = require('../models/HojaContable');
-
+const Ingreso = require('../models/Ingreso');
+const Gasto = require('../models/Gasto');
+const Anno = require('../models/Anualidad');
+const { calcularTotalesAnno } = require('./anualidadController');
 // Crear una nueva Hoja Contable
 exports.crearHojaContable = async (req, res) => {
     console.log(req.body)
@@ -55,16 +58,29 @@ exports.actualizarHojaContable = async (req, res) => {
 
 // Eliminar una Hoja Contable
 exports.eliminarHojaContable = async (req, res) => {
+    const { id } = req.params;
+
     try {
-        const hojaEliminada = await HojaContable.findByIdAndDelete(req.params.id);
+        // 1. Eliminar la HojaContable
+        const hojaEliminada = await HojaContable.findByIdAndDelete(id);
         if (!hojaEliminada) {
-            return res.status(404).json({ error: 'Hoja Contable no encontrada' });
+            return res.status(404).json({ message: 'HojaContable no encontrada' });
         }
-        res.status(200).json({ message: 'Hoja Contable eliminada correctamente' });
+
+        // 2. Eliminar los Ingresos asociados
+        await Ingreso.deleteMany({ idHojaContable: id });
+
+        // 3. Eliminar los Gastos asociados
+        await Gasto.deleteMany({ idHojaContable: id });
+
+        // 4. Calcular los totales del año de la hoja eliminada
+        await calcularTotalesAnno({ params: { anio: hojaEliminada.anio } }, res);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error('Error eliminando HojaContable:', error);
+        res.status(500).json({ message: 'Error al eliminar la HojaContable', error });
     }
 };
+
 
 
 exports.getHojasContablesByUsuario = async (req, res) => {
@@ -122,5 +138,25 @@ exports.verificarHojaContableActual = async (req, res) => {
         });
     }
 };
+
+
+exports.obtenerHojasByAnno = async (req, res) => {
+    const { anio } = req.params; // El año es pasado como parámetro en la URL
+    
+    try {
+        // Buscamos todas las hojas contables con el año especificado
+        const hojasContables = await HojaContable.find({ anio: parseInt(anio) });
+        console.log(hojasContables);
+        if (hojasContables.length === 0) {
+            return res.status(404).json({ message: 'No se encontraron hojas contables para el año ' + anio });
+        }
+
+        // Devolvemos las hojas contables encontradas
+        res.status(200).json(hojasContables);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error al obtener las hojas contables' });
+    }
+}
 
 

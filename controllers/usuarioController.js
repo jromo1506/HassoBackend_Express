@@ -55,6 +55,7 @@ exports.autenticarUsuario = async(req,res) =>{
                 id: usuarioEncontrado._id,
                 usuario: usuarioEncontrado.usuario,
                 nivelUsuario: usuarioEncontrado.nivelUsuario,
+                permisosEspeciales: usuarioEncontrado.permisosEspeciales
             }
         });
     } catch (error) {

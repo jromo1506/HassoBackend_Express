@@ -122,6 +122,7 @@ router.put('/hojaContable/:id', hojaContableController.actualizarHojaContable);
 router.delete('/hojaContable/:id', hojaContableController.eliminarHojaContable);
 router.get('/hojaContable/usuario/:idUsuario',hojaContableController.getHojasContablesByUsuario);
 router.post('/hojaContable/checarExistencia',hojaContableController.verificarHojaContableActual);
+router.get('/obtenerHojasByAnno/:anio',hojaContableController.obtenerHojasByAnno);
 
 // GASTOS
 // router.post('/gasto', gastoController.createGastoValidarRFC);
