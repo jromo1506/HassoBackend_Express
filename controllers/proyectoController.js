@@ -67,6 +67,17 @@ exports.buscarProyecto = async (req, res) => {
     try {
         const { searchQuery } = req.query;
 
+        // Si la cadena de búsqueda está vacía, devolver todos los proyectos
+        if (searchQuery === '') {
+            const proyectos = await Proyecto.find()
+                .sort({ nombre: 1 }); // Ordenar alfabéticamente por nombre
+            return res.status(200).json({
+                message: `Se encontraron ${proyectos.length} proyectos`,
+                proyectos
+            });
+        }
+
+        // Si no hay cadena de búsqueda, devolver error
         if (!searchQuery) {
             return res.status(400).json({
                 message: 'Debe proporcionar una cadena de búsqueda'

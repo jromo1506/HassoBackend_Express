@@ -158,11 +158,21 @@ exports.validarRfcCurpTarjCuenEmpleado = async (req, res) => {
 
 
 
-
 exports.buscarEmpleado = async (req, res) => {
     try {
         const { searchQuery } = req.query;
 
+        // Si la cadena de búsqueda está vacía, devolver todos los empleados que no estén despedidos
+        if (searchQuery === '') {
+            const empleados = await Empleado.find({ despedido: { $ne: true } })
+                .sort({ nombre: 1, apePat: 1, apeMat: 1 }); // Ordenar alfabéticamente
+            return res.status(200).json({
+                message: `Se encontraron ${empleados.length} empleados`,
+                empleados
+            });
+        }
+
+        // Si no hay cadena de búsqueda, devolver error
         if (!searchQuery) {
             return res.status(400).json({
                 message: 'Debe proporcionar una cadena de búsqueda'
