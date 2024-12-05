@@ -28,15 +28,48 @@ exports.actualizarFilaCajaChica = async (req, res) => {
 
 
 // Crear una nueva caja chica
-exports.crearCajaChica = async (req, res) => {
+exports.crearCajaChica =  async (req, res) => {
+    const { idUsuario, mes, anio, nombreCajaChica } = req.body;
+  
     try {
-        const nuevaCajaChica = new CajaChica(req.body);
-        await nuevaCajaChica.save();
-        res.status(201).json(nuevaCajaChica);
+      // Buscar si ya existe una Caja Chica para este usuario, mes y año
+      const cajaChicaExistente = await CajaChica.findOne({
+        idUsuario: idUsuario,
+        mes: mes,
+        anio: anio
+      });
+  
+      if (cajaChicaExistente) {
+        // Si ya existe, retornar un mensaje indicando que no se creó
+        return res.status(400).json({
+          message: 'Ya existe una Caja Chica para este usuario, mes y año.'
+        });
+      }
+  
+      // Si no existe, crear una nueva Caja Chica
+      const nuevaCajaChica = new CajaChica({
+        nombreCajaChica: nombreCajaChica,
+        fechaHoja: new Date(), // O la fecha que necesites
+        idUsuario: idUsuario,
+        mes: mes,
+        anio: anio
+      });
+  
+      // Guardar la nueva Caja Chica en la base de datos
+      await nuevaCajaChica.save();
+  
+      return res.status(201).json({
+        message: 'Caja Chica creada exitosamente.',
+        cajaChica: nuevaCajaChica
+      });
     } catch (error) {
-        res.status(500).json({ message: 'Error al crear la caja chica', error });
+      console.error('Error al crear la Caja Chica:', error);
+      return res.status(500).json({
+        message: 'Error al procesar la solicitud.',
+        error: error.message
+      });
     }
-};
+  };
 
 // Obtener todas las cajas chicas
 exports.obtenerCajasChicas = async (req, res) => {
@@ -76,14 +109,28 @@ exports.actualizarCajaChica = async (req, res) => {
 
 // Eliminar una caja chica
 exports.eliminarCajaChica = async (req, res) => {
+    const { id } = req.params;  // El ID de la CajaChica se pasa como parámetro
+
     try {
-        const cajaChicaEliminada = await CajaChica.findByIdAndDelete(req.params.id);
-        if (!cajaChicaEliminada) {
-            return res.status(404).json({ message: 'Caja chica no encontrada' });
+        // 1. Verificar si la CajaChica existe
+        const cajaChica = await CajaChica.findById(id);
+
+        if (!cajaChica) {
+            return res.status(404).json({ error: 'CajaChica no encontrada' });
         }
-        res.status(200).json({ message: 'Caja chica eliminada' });
+
+        // 2. Eliminar los Movimientos asociados a esta CajaChica
+        await Movimiento.deleteMany({ idCajaChica: id });  // Eliminar todos los movimientos con ese idCajaChica
+
+        // 3. Eliminar la CajaChica
+        await CajaChica.findByIdAndDelete(id);  // Usamos findByIdAndDelete en lugar de remove()
+
+        // 4. Responder con éxito
+        res.status(200).json({ message: `CajaChica con ID ${id} y sus movimientos eliminados exitosamente` });
+
     } catch (error) {
-        res.status(500).json({ message: 'Error al eliminar la caja chica', error });
+        console.error(error);
+        res.status(500).json({ error: 'Error en el servidor' });
     }
 };
 
