@@ -11,11 +11,7 @@ const ProveedorSchema = new Schema({
         required: false
     },
     
-    idMovimiento: {
-        type: Schema.Types.ObjectId,
-        ref: 'Movimiento',
-        required: false
-    }
+    
 });
 
 module.exports = mongoose.model('Proveedor',ProveedorSchema);

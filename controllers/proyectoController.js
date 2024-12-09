@@ -4,14 +4,22 @@ const Proyecto = require('../models/Proyecto');
 
 // Crear un nuevo proyecto
 exports.createProyecto = async (req, res) => {
+    const { nombre, planta, clave } = req.body;
+
     try {
-        const proyecto = new Proyecto(req.body);
-        await proyecto.save();
-        res.status(201).json(proyecto);
+        // Buscar duplicados de clave
+        const existeClave = await Proyecto.findOne({ clave });
+        if (existeClave) {
+            return res.status(400).json({ message: 'La clave ya está registrada.' });
+        }
+
+        const nuevoProyecto = new Proyecto({ nombre, planta, clave });
+        await nuevoProyecto.save();
+        res.status(201).json(nuevoProyecto);
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        res.status(500).json({ message: 'Error al crear el proyecto.', error: error.message });
     }
-}; 
+};
 
 // Obtener todos los proyectos
 exports.getProyectos = async (req, res) => {

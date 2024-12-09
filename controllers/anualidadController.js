@@ -172,3 +172,18 @@ exports.calcularTotalesAnno = async (req, res) => {
         res.status(500).json({ message: 'Error al calcular y guardar los totales', error });
     }
 };
+
+
+exports.obtenerAnnoByAnio = async (req, res) => {
+    const { anio } = req.params; // Obtiene el parámetro 'anio' de la URL
+    console.log(anio);
+    try {
+        const anno = await Anno.findOne({ anio: Number(anio) }); // Busca el documento con el año proporcionado
+        if (!anno) {
+            return res.status(404).json({ message: 'Anno no encontrado' });
+        }
+        res.json(anno);
+    } catch (error) {
+        res.status(500).json({ message: 'Error al buscar el anno', error: error.message });
+    }
+};

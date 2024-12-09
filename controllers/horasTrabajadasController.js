@@ -311,7 +311,7 @@ exports.deleteHorasValidandoSiHayExtras = async (req, res) => {
 
   exports.calcularTotalNomina = async (req, res) => {
     const { idSemana, idEmpleado } = req.params;
-
+    console.log(idSemana + " " + idEmpleado, "ID EMPLEADO");
     try {
         // Buscar la nómina
         const nomina = await Nomina.findOne({ idSemana, idEmpleado });
@@ -321,16 +321,15 @@ exports.deleteHorasValidandoSiHayExtras = async (req, res) => {
 
         // Obtener las horas trabajadas
         const horasTrabajadas = await HorasTrabajadas.find({ idSemana, idEmpleado });
-        if (!horasTrabajadas.length) {
-            return res.status(404).json({ message: 'No se encontraron horas trabajadas.' });
-        }
 
         // Calcular el total de horas trabajadas
         let totalHoras = 0;
-        horasTrabajadas.forEach(hora => {
-            const pagoHora = hora.sonHorasExtra ? nomina.sueldoHora * 2 : nomina.sueldoHora;
-            totalHoras += hora.horasTrabajadas * pagoHora;
-        });
+        if (horasTrabajadas.length) {
+            horasTrabajadas.forEach(hora => {
+                const pagoHora = hora.sonHorasExtra ? nomina.sueldoHora * 2 : nomina.sueldoHora;
+                totalHoras += hora.horasTrabajadas * pagoHora;
+            });
+        }
 
         // Sumar total de horas trabajadas con finiquito y sobresueldo
         const totalNomina = totalHoras + nomina.finiquito + nomina.sobreSueldo;
@@ -348,11 +347,11 @@ exports.deleteHorasValidandoSiHayExtras = async (req, res) => {
 
         await nomina.save();
 
-        return res.status(200).json({ 
-            message: 'Nómina calculada y actualizada correctamente.', 
+        return res.status(200).json({
+            message: 'Nómina calculada y actualizada correctamente.',
             totalNomina,
             lesDoy,
-            dispEfectivo 
+            dispEfectivo
         });
 
     } catch (error) {
@@ -360,7 +359,6 @@ exports.deleteHorasValidandoSiHayExtras = async (req, res) => {
         return res.status(500).json({ message: 'Error al calcular la nómina.', error });
     }
 };
-
 
 
 exports.obtenerPagoTotalHoras = async (req, res) => {

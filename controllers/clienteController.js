@@ -2,12 +2,20 @@ const Cliente = require('../models/Cliente');
 
 // Crear un nuevo cliente
 exports.crearCliente = async (req, res) => {
+    const { nombre, rfc, idMovimiento } = req.body;
+
     try {
-        const cliente = new Cliente(req.body);
-        const nuevoCliente = await cliente.save();
+        // Buscar duplicados de RFC
+        const existeRFC = await Cliente.findOne({ rfc });
+        if (existeRFC) {
+            return res.status(400).json({ message: 'El RFC ya está registrado.' });
+        }
+
+        const nuevoCliente = new Cliente({ nombre, rfc, idMovimiento });
+        await nuevoCliente.save();
         res.status(201).json(nuevoCliente);
     } catch (error) {
-        res.status(400).json({ mensaje: 'Error al crear el cliente', error });
+        res.status(500).json({ message: 'Error al crear el cliente.', error: error.message });
     }
 };
 

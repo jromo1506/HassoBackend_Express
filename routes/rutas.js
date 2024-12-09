@@ -63,7 +63,7 @@ router.get('/annos/:id', anualidadController.getAnnoById);
 router.put('/annos/:id', anualidadController.updateAnno);
 router.delete('/annos/:id', anualidadController.deleteAnno);
 router.get('/calcularTotalAnio/:anio',anualidadController.calcularTotalesAnno);
-
+router.get('/obtenerAnnoByAnio/:anio',anualidadController.obtenerAnnoByAnio );
 
 
 // SEMANA
