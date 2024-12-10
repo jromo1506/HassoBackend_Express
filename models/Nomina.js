@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const {Schema } = mongoose;
+const DiasSemana = require('./DiaSemanaNomina');
 
 const NominaSchema = new Schema({
     // ID COMPUESTO
@@ -109,10 +110,11 @@ const NominaSchema = new Schema({
         required:false,
         default:false
     }
-    
-
 
 });
+
+
+
 
 
 module.exports = mongoose.model('Nomina',NominaSchema);
