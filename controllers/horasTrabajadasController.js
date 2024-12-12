@@ -417,42 +417,71 @@ exports.getHorasTrabajadasByNomina = async (req, res) => {
 };
 
 
-
 exports.despliegueTotal = async (req, res) => {
     try {
-        const { idSemana,idEmpleado,idProyecto} = req.params;
+        const { idSemana, idEmpleado } = req.params;
 
-        // Llama al servicio
-        const horasPagadas = await calcularPagoEmpleado(idEmpleado, idProyecto, idSemana);
-        const numeroDias = await obtenerDiasTrabajados(idSemana,idEmpleado);
-        const workDaysPerSingleProyect= await getWorkDaysForSingleProject(idSemana, idProyecto);
-        const obtenerDatosNomina = await obtenerDetallesNomina(idSemana,idEmpleado);
-        var yarbis = {
-           pension: (obtenerDatosNomina.pension / numeroDias) * workDaysPerSingleProyect,
-           sobreSueldo: (obtenerDatosNomina.sobreSueldo / numeroDias) * workDaysPerSingleProyect,
-           finiquito:( obtenerDatosNomina.finiquito / numeroDias) * workDaysPerSingleProyect,
+        // Clasifica los proyectos
+        const { soloFinDeSemana, mixto } = await clasificarProyectos(idSemana, idEmpleado);
+
+        // Array para almacenar todos los desgloses
+        const arrayDesgloseFinal = [];
+
+        // Procesa los proyectos solo de fines de semana
+        for (const idProyecto of soloFinDeSemana) {
+            const horasPagadas = await calcularPagoEmpleado(idEmpleado, idProyecto, idSemana);
+            const numeroDias = await obtenerDiasTrabajados(idSemana, idEmpleado);
+
+            const desglose = {
+                idProyecto,
+                tipo: 'soloFinDeSemana',
+                sumaPagoHoras: horasPagadas,
+                numeroDiasTrabajados: numeroDias,
+                numeroDiasTrabajadosPorObra: 0, // No aplica en fines de semana
+                pension: 0,
+                sobreSueldo: 0,
+                finiquito: 0,
+            };
+
+            arrayDesgloseFinal.push(desglose);
         }
-       
-        // console.log(numeroProyectos,"Numero de proyectos");
-        // console.log(workDaysPerProject,"Dias trabajados pro proyecto");
+
+        // Procesa los proyectos mixtos (incluyendo los de L-V y combinados con fines de semana)
+        for (const idProyecto of mixto) {
+            const horasPagadas = await calcularPagoEmpleado(idEmpleado, idProyecto, idSemana);
+            const numeroDias = await obtenerDiasTrabajados(idSemana, idEmpleado);
+            const workDaysPerSingleProyect = await getWorkDaysForSingleProject(idSemana, idProyecto);
+            const obtenerDatosNomina = await obtenerDetallesNomina(idSemana, idEmpleado);
+
+            const desglose = {
+                idProyecto,
+                tipo: 'mixto',
+                sumaPagoHoras: horasPagadas,
+                numeroDiasTrabajados: numeroDias,
+                numeroDiasTrabajadosPorObra: workDaysPerSingleProyect,
+                pension: (obtenerDatosNomina.pension / numeroDias) * workDaysPerSingleProyect,
+                sobreSueldo: (obtenerDatosNomina.sobreSueldo / numeroDias) * workDaysPerSingleProyect,
+                finiquito: (obtenerDatosNomina.finiquito / numeroDias) * workDaysPerSingleProyect,
+            };
+
+            arrayDesgloseFinal.push(desglose);
+        }
+
+        // Respuesta exitosa
         res.status(200).json({
             success: true,
-            message: 'Proyectos únicos obtenidos exitosamente',
-            horasPagadas,
-            numeroDias,//Se divide entre el numero DE PROYECTOS O ENTRE 5?????
-            workDaysPerSingleProyect,
-            yarbis
+            message: 'Proyectos procesados exitosamente',
+            desgloses: arrayDesgloseFinal,
         });
     } catch (error) {
-        console.error('Error en el controlador:', error);
+        console.error('Error en el controlador:', error.message);
         res.status(500).json({
             success: false,
-            message: 'Error al obtener proyectos únicos',
+            message: 'Error al procesar los proyectos',
             error: error.message,
         });
     }
 };
-
 
 async function getWorkDaysPerProject(idSemana) {
     try {
@@ -557,12 +586,16 @@ async function getWorkDaysForSingleProject(idSemana, idProyecto) {
 
 
 
+exports.calculoIndividual = async(req,res)=>{
+    const {idSemana,idEmpleado} = req.params;
+    try{
+        const proyectos = await clasificarProyectos(idSemana,idEmpleado);
+        console.log(proyectos);
+    }
+    catch(error){
 
-exports.calculoIndividual = async (req, res) => {
-
-
+    }
 }
-
 
 
 
@@ -680,3 +713,50 @@ async function obtenerDetallesNomina(idSemana, idEmpleado) {
     }
 }
 
+async function clasificarProyectos(idSemana, idEmpleado) {
+    try {
+        // Obtener todas las horas trabajadas del empleado en la semana
+        const horasTrabajadas = await HorasTrabajadas.find({ idSemana, idEmpleado });
+        
+        if (!horasTrabajadas || horasTrabajadas.length === 0) {
+            throw new Error('No se encontraron registros de horas trabajadas para el empleado y semana especificados.');
+        }
+
+        // Arrays para clasificar los proyectos
+        const soloFinDeSemana = [];
+        const mixto = [];
+        const proyectosDiasLaborables = new Set(); // Para rastrear proyectos trabajados L-V
+        const proyectosFinDeSemana = new Set(); // Para rastrear proyectos trabajados S-D
+
+        // Clasificación de días laborables y no laborables
+        const diasLaborables = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes'];
+        const diasFinDeSemana = ['Viernes anteriror', 'Sabado anterior','Domingo Anterior'];
+
+         // Agrupar proyectos por tipo de día
+         horasTrabajadas.forEach((registro) => {
+            if (diasLaborables.includes(registro.diaSemana)) {
+                proyectosDiasLaborables.add(registro.idProyecto);
+            } else if (diasFinDeSemana.includes(registro.diaSemana)) {
+                proyectosFinDeSemana.add(registro.idProyecto);
+            }
+        });
+
+        // Clasificar los proyectos
+        const todosLosProyectos = new Set([...proyectosDiasLaborables, ...proyectosFinDeSemana]);
+
+        todosLosProyectos.forEach((idProyecto) => {
+            if (proyectosFinDeSemana.has(idProyecto) && !proyectosDiasLaborables.has(idProyecto)) {
+                // Proyectos exclusivamente en fin de semana
+                soloFinDeSemana.push(idProyecto);
+            } else {
+                // Proyectos de lunes a viernes o mixtos
+                mixto.push(idProyecto);
+            }
+        });
+
+        return { soloFinDeSemana, mixto };
+    } catch (error) {
+        console.error('Error al clasificar proyectos:', error.message);
+        throw error;
+    }
+}

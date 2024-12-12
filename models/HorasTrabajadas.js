@@ -46,3 +46,4 @@ const HorasTrabajadasSchema = new Schema({
 
 
 module.exports = mongoose.model('HorasTrabajadas',HorasTrabajadasSchema);
+
