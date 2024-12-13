@@ -1,5 +1,7 @@
 const HorasTrabajadas = require('../models/HorasTrabajadas.js');
-const Nomina = require('../models/Nomina.js')
+const Nomina = require('../models/Nomina.js');
+const Proyecto = require('../models/Proyecto.js');
+const Empleado = require('../models/Empleado');
 const express = require('express');
 const router = express.Router();
 
@@ -321,7 +323,7 @@ exports.deleteHorasValidandoSiHayExtras = async (req, res) => {
 
         // Obtener las horas trabajadas
         const horasTrabajadas = await HorasTrabajadas.find({ idSemana, idEmpleado });
-
+        console.log(horasTrabajadas,"HORAS ENCONTRADAS");
         // Calcular el total de horas trabajadas
         let totalHoras = 0;
         if (horasTrabajadas.length) {
@@ -373,6 +375,7 @@ exports.obtenerPagoTotalHoras = async (req, res) => {
 
         // Obtener las horas trabajadas para la semana y empleado específicos
         const horasTrabajadas = await HorasTrabajadas.find({ idSemana, idEmpleado });
+        console.log(horasTrabajadas,"HORAS TRABAJADAS");
         if (!horasTrabajadas.length) {
             return res.status(404).json({ message: 'No se encontraron horas trabajadas.' });
         }
@@ -416,7 +419,6 @@ exports.getHorasTrabajadasByNomina = async (req, res) => {
     }
 };
 
-
 exports.despliegueTotal = async (req, res) => {
     try {
         const { idSemana, idEmpleado } = req.params;
@@ -429,11 +431,14 @@ exports.despliegueTotal = async (req, res) => {
 
         // Procesa los proyectos solo de fines de semana
         for (const idProyecto of soloFinDeSemana) {
-            const horasPagadas = await calcularPagoEmpleado(idEmpleado, idProyecto, idSemana);
+            const horasPagadasObj = await calcularPagoEmpleado(idEmpleado, idProyecto, idSemana);
+            const horasPagadas = horasPagadasObj.totalPago || 0; // Extraer totalPago
             const numeroDias = await obtenerDiasTrabajados(idSemana, idEmpleado);
+            const nombreProyecto = await obtenerNombreProyecto(idProyecto); // Obtener el nombre del proyecto
 
             const desglose = {
                 idProyecto,
+                nombreProyecto, // Agregar el nombre del proyecto
                 tipo: 'soloFinDeSemana',
                 sumaPagoHoras: horasPagadas,
                 numeroDiasTrabajados: numeroDias,
@@ -441,28 +446,49 @@ exports.despliegueTotal = async (req, res) => {
                 pension: 0,
                 sobreSueldo: 0,
                 finiquito: 0,
+                total: horasPagadas // Total igual a sumaPagoHoras
             };
+
+            console.log(desglose,desglose.nombreProyecto);
 
             arrayDesgloseFinal.push(desglose);
         }
 
-        // Procesa los proyectos mixtos (incluyendo los de L-V y combinados con fines de semana)
+        // Procesa los proyectos mixtos
         for (const idProyecto of mixto) {
-            const horasPagadas = await calcularPagoEmpleado(idEmpleado, idProyecto, idSemana);
+            const horasPagadasObj = await calcularPagoEmpleado(idEmpleado, idProyecto, idSemana);
+            const horasPagadas = horasPagadasObj.totalPago || 0; // Extraer totalPago
             const numeroDias = await obtenerDiasTrabajados(idSemana, idEmpleado);
+
+            if (numeroDias === 0) {
+                // console.warn(Número de días trabajados es 0 para el proyecto ${idProyecto}. Saltando cálculo.);
+                continue; // Evita divisiones por 0
+            }
+
             const workDaysPerSingleProyect = await getWorkDaysForSingleProject(idSemana, idProyecto);
             const obtenerDatosNomina = await obtenerDetallesNomina(idSemana, idEmpleado);
+            const nombreProyecto = await obtenerNombreProyecto(idProyecto); // Obtener el nombre del proyecto
+
+            const pension = (obtenerDatosNomina.pension / numeroDias) * workDaysPerSingleProyect || 0;
+            const sobreSueldo = (obtenerDatosNomina.sobreSueldo / numeroDias) * workDaysPerSingleProyect || 0;
+            const finiquito = (obtenerDatosNomina.finiquito / numeroDias) * workDaysPerSingleProyect || 0;
+
+            const total = horasPagadas + sobreSueldo - pension;
 
             const desglose = {
                 idProyecto,
+                nombreProyecto, // Agregar el nombre del proyecto
                 tipo: 'mixto',
                 sumaPagoHoras: horasPagadas,
                 numeroDiasTrabajados: numeroDias,
                 numeroDiasTrabajadosPorObra: workDaysPerSingleProyect,
-                pension: (obtenerDatosNomina.pension / numeroDias) * workDaysPerSingleProyect,
-                sobreSueldo: (obtenerDatosNomina.sobreSueldo / numeroDias) * workDaysPerSingleProyect,
-                finiquito: (obtenerDatosNomina.finiquito / numeroDias) * workDaysPerSingleProyect,
+                pension,
+                sobreSueldo,
+                finiquito,
+                total
             };
+
+            console.log(desglose,desglose.nombreProyecto);
 
             arrayDesgloseFinal.push(desglose);
         }
@@ -482,6 +508,13 @@ exports.despliegueTotal = async (req, res) => {
         });
     }
 };
+
+
+const obtenerNombreProyecto = async (idProyecto) => {
+    const proyecto = await Proyecto.findById(idProyecto).select('nombre').exec();
+    return proyecto ? proyecto.nombre : 'Nombre no disponible';
+};
+
 
 async function getWorkDaysPerProject(idSemana) {
     try {
@@ -760,3 +793,106 @@ async function clasificarProyectos(idSemana, idEmpleado) {
         throw error;
     }
 }
+
+
+
+
+exports.despliegueTotalPorProyecto = async (req, res) => {
+    try {
+        const { idSemana, idEmpleado } = req.params;
+
+        // Clasifica los proyectos
+        const { soloFinDeSemana, mixto } = await clasificarProyectos(idSemana, idEmpleado);
+
+        // Array para almacenar todos los desgloses
+        const arrayDesgloseFinal = [];
+
+        // Procesa los proyectos solo de fines de semana
+        for (const idProyecto of soloFinDeSemana) {
+            const horasPagadasObj = await calcularPagoEmpleado(idEmpleado, idProyecto, idSemana);
+            const horasPagadas = horasPagadasObj.totalPago || 0; // Extraer totalPago
+
+            // Verifica si hay registros de horas para el empleado y la semana
+            const numeroDias = await obtenerDiasTrabajados(idSemana, idEmpleado);
+            console.log(numeroDias,"Numero dias");
+            if (numeroDias === 0) {
+                console.warn(`No se encontraron horas trabajadas para el empleado ${idEmpleado} en la semana ${idSemana} para el proyecto ${idProyecto}. Se registrará como 0.`);
+            }
+
+            const nombreProyecto = await obtenerNombreProyecto(idProyecto); // Obtener el nombre del proyecto
+
+            const desglose = {
+                idProyecto,
+                nombreProyecto, // Agregar el nombre del proyecto
+                tipo: 'soloFinDeSemana',
+                sumaPagoHoras: horasPagadas,
+                numeroDiasTrabajados: numeroDias || 0, // Si no hay horas, usamos 0
+                numeroDiasTrabajadosPorObra: 0, // No aplica en fines de semana
+                pension: 0,
+                sobreSueldo: 0,
+                finiquito: 0,
+                total: horasPagadas // Total igual a sumaPagoHoras
+            };
+
+            console.log(desglose, desglose.nombreProyecto);
+
+            arrayDesgloseFinal.push(desglose);
+        }
+
+        // Procesa los proyectos mixtos
+        for (const idProyecto of mixto) {
+            const horasPagadasObj = await calcularPagoEmpleado(idEmpleado, idProyecto, idSemana);
+            const horasPagadas = horasPagadasObj.totalPago || 0; // Extraer totalPago
+
+            // Verifica si hay registros de horas para el empleado y la semana
+            const numeroDias = await obtenerDiasTrabajados(idSemana, idEmpleado);
+            if (numeroDias === 0) {
+                console.warn(`No se encontraron horas trabajadas para el empleado ${idEmpleado} en la semana ${idSemana} para el proyecto ${idProyecto}. Se registrará como 0.`);
+                continue; // Salta este ciclo si no hay horas
+            }
+
+            const workDaysPerSingleProyect = await getWorkDaysForSingleProject(idSemana, idProyecto);
+            const obtenerDatosNomina = await obtenerDetallesNomina(idSemana, idEmpleado);
+            const nombreProyecto = await obtenerNombreProyecto(idProyecto); // Obtener el nombre del proyecto
+
+            const pension = (obtenerDatosNomina.pension / numeroDias) * workDaysPerSingleProyect || 0;
+            const sobreSueldo = (obtenerDatosNomina.sobreSueldo / numeroDias) * workDaysPerSingleProyect || 0;
+            const finiquito = (obtenerDatosNomina.finiquito / numeroDias) * workDaysPerSingleProyect || 0;
+
+            const total = horasPagadas + sobreSueldo - pension;
+
+            const desglose = {
+                idProyecto,
+                nombreProyecto, // Agregar el nombre del proyecto
+                tipo: 'mixto',
+                sumaPagoHoras: horasPagadas,
+                numeroDiasTrabajados: numeroDias || 0, // Si no hay horas, usamos 0
+                numeroDiasTrabajadosPorObra: workDaysPerSingleProyect || 0, // Si no hay días, usamos 0
+                pension,
+                sobreSueldo,
+                finiquito,
+                total
+            };
+
+            console.log(desglose, desglose.nombreProyecto);
+
+            arrayDesgloseFinal.push(desglose);
+        }
+
+        // Respuesta exitosa
+        res.status(200).json({
+            success: true,
+            message: 'Proyectos procesados exitosamente',
+            desgloses: arrayDesgloseFinal,
+        });
+    } catch (error) {
+        console.error('Error en el controlador:', error.message);
+        res.status(500).json({
+            success: false,
+            message: 'Error al procesar los proyectos',
+            error: error.message,
+        });
+    }
+};
+
+

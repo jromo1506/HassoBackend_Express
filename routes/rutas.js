@@ -54,8 +54,8 @@ router.delete('/deleteHorasValidandoSiHayxtras/:id', horasTrabajadasController.d
 router.put('/calcularNomina/:idSemana/:idEmpleado',horasTrabajadasController.calcularTotalNomina);
 router.get('/obtenerSumaHoras/:idSemana/:idEmpleado',horasTrabajadasController.obtenerPagoTotalHoras);
 
-router.get('/despliegueTotal/:idSemana/:idEmpleado/:idProyecto',horasTrabajadasController.despliegueTotal);
-
+router.get('/despliegueTotal/:idSemana/:idEmpleado',horasTrabajadasController.despliegueTotal);
+router.get('/despliegueTotal/:idSemana',horasTrabajadasController.despliegueTotalPorProyecto);
 
 // ANNO
 router.post('/annos',anualidadController.createAnno);
