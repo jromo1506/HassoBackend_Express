@@ -1,6 +1,7 @@
 const Semana = require('../models/Semana');
 const Nomina = require('../models/Nomina'); // Asegúrate de tener este modelo
 const Empleado = require('../models/Empleado');
+const Proyecto = require('../models/Proyecto');
 const HorasTrabajadas = require('../models/HorasTrabajadas');
 const express = require('express');
 const moment = require('moment');
@@ -337,7 +338,7 @@ exports.crearSemanaYNominas = async (req, res) => {
         // Obtener todos los empleados que no están despedidos
         const empleados = await Empleado.find({ despedido: false });
 
-        // Crear nómina para cada empleado no despedido
+        // Crear nómina y horas trabajadas para cada empleado
         const nominas = empleados.map(async (empleado) => {
             // Calculamos la deuda como sumaDeuda - abono
             const deuda = (empleado.sumaDeuda || 0) - (empleado.abono || 0);
@@ -346,14 +347,49 @@ exports.crearSemanaYNominas = async (req, res) => {
             const nuevaNomina = new Nomina({
                 idSemana: nuevaSemana._id,
                 idEmpleado: empleado._id,
-                idEmp:empleado.idEmp,
+                idEmp: empleado.idEmp,
                 nombreEmpleado: `${empleado.nombre} ${empleado.apePat} ${empleado.apeMat}`,
                 sueldoHora: empleado.pago,
                 banco: empleado.banco,
                 cuenta: empleado.cuenta,
                 tarjeta: empleado.tarjeta,
-                deben: deuda // Guardar la deuda calculada
+                deben: deuda, // Guardar la deuda calculada
             });
+
+            // Guardar la nómina en la base de datos
+            await nuevaNomina.save();
+
+            // Si tiene horas extra para el viernes pasado, registrarlas
+            if (empleado.horasExtraViernes > 0 && empleado.horasExtraViernesProyecto) {
+                // Obtener el nombre del proyecto para horas extra
+                const proyecto = await Proyecto.findById(empleado.horasExtraViernesProyecto);
+                if (proyecto) {
+                    // Crear registro de horas trabajadas
+                    const nuevasHorasTrabajadas = new HorasTrabajadas({
+                        idSemana: nuevaSemana._id,
+                        idProyecto: empleado.horasExtraViernesProyecto,
+                        idEmpleado: empleado._id,
+                        nombreProyecto: proyecto.nombre,
+                        nombreEmpleado: `${empleado.nombre} ${empleado.apePat}`,
+                        horasTrabajadas: empleado.horasExtraViernes,
+                        diaSemana: 'Viernes anterior',
+                        fecha: fechaInicio, // Fecha del viernes pasado
+                        sonHorasExtra: false, // Indicar que son horas extra
+                    });
+
+                    await nuevasHorasTrabajadas.save();
+
+                    // Añadir las horas trabajadas a la semana
+                    nuevaSemana.idHorasTrabajadas.push(nuevasHorasTrabajadas._id);
+                }
+
+                // Restablecer los campos `horasExtraViernes` y `horasExtraViernesProyecto` a 0
+                await Empleado.findByIdAndUpdate(
+                    empleado._id,
+                    { horasExtraViernes: 0, horasExtraViernesProyecto: 0 },
+                    { new: true }
+                );
+            }
 
             // Actualizar la deuda en el empleado
             await Empleado.findByIdAndUpdate(
@@ -361,12 +397,10 @@ exports.crearSemanaYNominas = async (req, res) => {
                 { deuda: deuda }, // Sustituimos la deuda del empleado con la deuda calculada
                 { new: true }
             );
-
-            // Guardar la nómina en la base de datos
-            return nuevaNomina.save();
         });
 
         await Promise.all(nominas); // Espera que todas las nóminas sean creadas.
+        await nuevaSemana.save(); // Guardar la semana con las horas trabajadas asociadas
 
         return res.status(201).json({ message: 'Semana y nóminas creadas con éxito.' });
     } catch (error) {
@@ -374,5 +408,3 @@ exports.crearSemanaYNominas = async (req, res) => {
         return res.status(500).json({ message: 'Error al crear semana y nóminas.', error });
     }
 };
-
-

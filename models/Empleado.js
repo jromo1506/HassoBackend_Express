@@ -61,6 +61,19 @@ const EmpleadoSchema = new Schema({
     },
 
 
+    horasExtraViernes:{
+        type:Number,
+        required:false,
+        default:0,
+    },
+    horasExtraViernesProyecto:{
+        type:String,
+        required:false,
+        default:0,
+    },
+
+
+    
     curp:{
         type:String,
         required:true

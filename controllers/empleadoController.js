@@ -211,3 +211,32 @@ exports.buscarEmpleado = async (req, res) => {
     }
 };
 
+
+exports.horasExtrasViernes = async (req, res) => {
+    const { id } = req.params;
+    const { horasExtraViernes, horasExtraViernesProyecto } = req.body;
+    console.log(horasExtraViernes + " " + horasExtraViernesProyecto);
+    try {
+        // Buscar y actualizar el empleado
+        const empleadoActualizado = await Empleado.findByIdAndUpdate(
+            id,
+            { horasExtraViernes, horasExtraViernesProyecto },
+            { new: true } // Devuelve el documento actualizado
+        );
+
+        if (!empleadoActualizado) {
+            return res.status(404).json({ message: 'Empleado no encontrado' });
+        }
+
+        res.json({
+            message: 'Campos actualizados correctamente',
+            empleado: empleadoActualizado,
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error al actualizar los campos',
+            error: error.message,
+        });
+    }
+};
+

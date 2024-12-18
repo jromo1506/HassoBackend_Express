@@ -27,7 +27,7 @@ router.delete('/empleados/:id', empleadoController.deleteEmpleado);
 router.post('/empleados/validarRepetidos',empleadoController.validarRfcCurpTarjCuenEmpleado);
 router.get('/buscaEmpleado', empleadoController.buscarEmpleado);
 router.put('/despedirEmpleado/:id',empleadoController.despedirEmpleado);
-
+router.put('/horasExtrasViernes/:id',empleadoController.horasExtrasViernes);
 
 // PROYECTO
 router.post('/proyectos', proyectoController.createProyecto);
