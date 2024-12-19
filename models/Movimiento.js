@@ -18,6 +18,23 @@ const MovimientoSchema = new Schema({
         type: Number,
         required: true
     },
+    iva:{
+        type:Number,
+        required:false,
+        default:0
+
+    },
+    impEsp:{
+        type:Number,
+        required:false,
+        default:0
+    },
+    total:{
+        type:Number,
+        required:false,
+        default:0
+    },
+
     abono: {
         type: Number,
         required: true
