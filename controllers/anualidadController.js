@@ -2,7 +2,8 @@ const Anno = require('../models/Anualidad');  // Asegúrate de que la ruta sea c
 const Gasto = require('../models/Gasto');
 const Ingreso = require('../models/Ingreso');
 const HojaContable = require('../models/HojaContable');
-
+const CajaChica = require('../models/CajaChica');
+const Movimiento = require('../models/Movimiento');
 // Crear un nuevo Anno
 exports.createAnno = async (req, res) => {
     try {
@@ -185,5 +186,59 @@ exports.obtenerAnnoByAnio = async (req, res) => {
         res.json(anno);
     } catch (error) {
         res.status(500).json({ message: 'Error al buscar el anno', error: error.message });
+    }
+};
+
+
+
+
+
+exports.obtenerMovimientosAnuales = async (req, res) => {
+    const { anio } = req.params;
+
+    try {
+        // Llamamos a obtenerMovimientosPorAnio pasándole el año
+        const movimientos = await obtenerMovimientosPorAnio(anio);
+        
+        // Enviar la respuesta con los movimientos encontrados
+        res.status(200).json(movimientos);
+    } catch (error) {
+        // Enviar un error en caso de que algo falle
+        res.status(500).json({ error: error.message });
+    }
+};
+
+
+
+
+const obtenerMovimientosPorAnio = async (anio)=>{
+    try {
+        // Validar que el parámetro sea un número
+        if (isNaN(anio)) {
+            throw new Error('El año debe ser un número válido.');
+        }
+
+        // Buscar todas las cajas chicas del año especificado
+        const cajasChicas = await CajaChica.find({ anio: parseInt(anio, 10) });
+
+        if (cajasChicas.length === 0) {
+            throw new Error(`No se encontraron cajas chicas para el año ${anio}.`);
+        }
+
+        // Extraer los IDs de las cajas chicas
+        const idsCajasChicas = cajasChicas.map(caja => caja._id);
+
+        // Buscar los movimientos relacionados con estas cajas chicas
+        const movimientos = await Movimiento.find({ idCajaChica: { $in: idsCajasChicas } });
+
+        if (movimientos.length === 0) {
+            throw new Error(`No se encontraron movimientos para las cajas chicas del año ${anio}.`);
+        }
+
+        // Retornar los movimientos encontrados
+        return movimientos;
+    } catch (error) {
+        // Propagar el error para que el controlador lo maneje
+        throw error;
     }
 };

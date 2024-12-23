@@ -181,3 +181,95 @@ exports.buscarHojaContable = async (req, res) => {
 
 
 
+exports.obtenerCajasChicasPorAnio =  async (req, res) => {
+  const { anio } = req.params;
+  try {
+      // Validar que el parámetro sea un número
+      if (isNaN(anio)) {
+          return res.status(400).json({ error: 'El año debe ser un número.' });
+      }
+
+      // Buscar las hojas del año especificado
+      const hojas = await CajaChica.find({ anio: parseInt(anio, 10) });
+
+      // Responder con los resultados
+      if (hojas.length === 0) {
+          return res.status(404).json({ message: `No se encontraron hojas para el año ${anio}.` });
+      }
+
+      res.status(200).json(hojas);
+  } catch (error) {
+      console.error('Error al obtener hojas:', error);
+      res.status(500).json({ error: 'Error del servidor. Inténtalo más tarde.' });
+  }
+};
+
+
+exports.obtenerCajasChicasPorAnioYUsuario = async (req, res) => {
+  const { anio, idUsuario } = req.params;
+
+  try {
+      // Validar que el parámetro "anio" sea un número
+      if (isNaN(anio)) {
+          return res.status(400).json({ error: 'El año debe ser un número.' });
+      }
+
+      // Validar que "idUsuario" esté presente
+      if (!idUsuario) {
+          return res.status(400).json({ error: 'El ID del usuario es requerido.' });
+      }
+
+      // Buscar las hojas del año y usuario especificados
+      const hojas = await CajaChica.find({
+          anio: parseInt(anio, 10),
+          idUsuario: idUsuario
+      }).populate('idUsuario'); // Incluye la información del usuario relacionado
+
+      // Verificar si se encontraron resultados
+      if (hojas.length === 0) {
+          return res.status(404).json({ message: `No se encontraron hojas para el año ${anio} y usuario ${idUsuario}.` });
+      }
+
+      res.status(200).json(hojas);
+  } catch (error) {
+      console.error('Error al obtener hojas:', error);
+      res.status(500).json({ error: 'Error del servidor. Inténtalo más tarde.' });
+  }
+};
+
+
+const obtenerMovimientosPorAnio = async (anio) => {
+  try {
+      // Validar que el parámetro sea un número
+      if (isNaN(anio)) {
+          throw new Error('El año debe ser un número válido.');
+      }
+
+      // Buscar todas las cajas chicas del año especificado
+      const cajasChicas = await CajaChica.find({ anio: parseInt(anio, 10) });
+
+      if (cajasChicas.length === 0) {
+          throw new Error(`No se encontraron cajas chicas para el año ${anio}.`);
+      }
+
+      // Extraer los IDs de las cajas chicas
+      const idsCajasChicas = cajasChicas.map(caja => caja._id);
+
+      // Buscar los movimientos relacionados con estas cajas chicas
+      const movimientos = await Movimiento.find({ idCajaChica: { $in: idsCajasChicas } });
+
+      if (movimientos.length === 0) {
+          throw new Error(`No se encontraron movimientos para las cajas chicas del año ${anio}.`);
+      }
+
+      // Retornar los movimientos encontrados
+      return movimientos;
+  } catch (error) {
+      // Propagar el error para que el controlador lo maneje
+      throw error;
+  }
+};
+
+
+
+
