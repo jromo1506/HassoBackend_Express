@@ -65,6 +65,7 @@ router.put('/annos/:id', anualidadController.updateAnno);
 router.delete('/annos/:id', anualidadController.deleteAnno);
 router.get('/calcularTotalAnio/:anio',anualidadController.calcularTotalesAnno);
 router.get('/obtenerAnnoByAnio/:anio',anualidadController.obtenerAnnoByAnio );
+router.get('/obtenerMovimientosAnuales/:anio',anualidadController.obtenerMovimientosAnuales);
 
 
 // SEMANA
@@ -102,8 +103,8 @@ router.put('/cajas-chicas/:id', cajaChicaController.actualizarFilaCajaChica);
 router.delete('/cajas-chicas/:id', cajaChicaController.eliminarCajaChica);
 router.get('/cajas-chicas/usuario/:idUsuario',cajaChicaController.getCajasChicasByUsuario);
 router.post('/cajas-chicas/buscarHojaContable',cajaChicaController.buscarHojaContable);
-
-
+router.get('/obtenerCajasChicasPorAnio/:anio',cajaChicaController.obtenerCajasChicasPorAnio)
+router.get('/obtenerCajasChicasPorUsuarioYUsuario/:anio/:idUsuario',cajaChicaController.obtenerCajasChicasPorAnioYUsuario)
 // MOVIMEINTO
 router.post('/movimientos', movimientoController.crearMovimiento);
 router.get('/movimientos', movimientoController.obtenerMovimientos);

@@ -23,7 +23,8 @@ exports.crearUsuario = async (req, res) => {
         const nuevoUsuario = new Usuario({
             usuario: req.body.usuario,
             password: hashedPassword,
-            nivelUsuario: req.body.nivelUsuario
+            nivelUsuario: req.body.nivelUsuario,
+            permisosEspeciales:req.body.permisosEspeciales
         });
 
         await nuevoUsuario.save();

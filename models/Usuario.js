@@ -18,9 +18,8 @@ const UsuarioSchema = new Schema({
         // enum: ['admin', 'usuario', 'supervisor'] // Ejemplo de niveles de usuario, puedes ajustar según necesites
     },
     permisosEspeciales:{
-        type:String,
+        type:Boolean,
         required: true,
-        default:false,
     }
 });
 

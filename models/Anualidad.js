@@ -7,6 +7,9 @@ const AnnoSchema = new Schema({
         required:true,
     },
 
+    
+    // CONTABILIDAD
+
     // Total ingresos
 
     total_Ingresos:{
@@ -87,6 +90,17 @@ const AnnoSchema = new Schema({
         default:0,
     },
     pagoISR_IVA:{
+        type:Number,
+        required:false,
+        default:0,
+    },
+
+
+
+    // CAJA CHICA
+
+
+    Saldo:{
         type:Number,
         required:false,
         default:0,
