@@ -40,6 +40,15 @@ const HorasTrabajadasSchema = new Schema({
     sonHorasExtra:{
         type:Boolean,
         required:true
+    },
+    excepcion:{
+        type:String,
+        required:false,
+        default:"Ninguna",
+    },
+    fechaAlta:{
+        type:Date,
+        required:false,
     }
 
 });
