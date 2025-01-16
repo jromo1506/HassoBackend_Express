@@ -57,6 +57,15 @@ router.get('/obtenerSumaHoras/:idSemana/:idEmpleado',horasTrabajadasController.o
 router.get('/despliegueTotal/:idSemana/:idEmpleado',horasTrabajadasController.despliegueTotal);
 router.get('/despliegueTotal/:idSemana',horasTrabajadasController.despliegueTotalPorProyecto);
 
+
+// FUNCIONES DE RECOLOCACION DE HORAS
+router.get('/reallocHoras/:idSemana/:idEmpleado',horasTrabajadasController.recolocarHoras);
+
+
+
+
+
+
 // ANNO
 router.post('/annos',anualidadController.createAnno);
 router.get('/annos', anualidadController.getAllAnnos);

@@ -4,6 +4,7 @@ const Proyecto = require('../models/Proyecto.js');
 const Empleado = require('../models/Empleado');
 const express = require('express');
 const router = express.Router();
+const recolocadorService = require('../services/recolocadorDeHorasExtras.js');
 
 
 // Crear nuevas horas trabajadas
@@ -667,6 +668,9 @@ exports.calculoIndividual = async(req,res)=>{
 
 
 
+
+
+
 async function calcularPagoEmpleado(idEmpleado, idProyecto, idSemana) {
     try {
         // Obtener todas las horas trabajadas por el empleado en el proyecto durante la semana
@@ -928,5 +932,50 @@ exports.despliegueTotalPorProyecto = async (req, res) => {
         });
     }
 };
+
+
+
+
+// RECOLOCADOR DE HORAS 
+
+exports.recolocarHoras= async(req,res) => {
+    try{
+        const {idSemana,idEmpleado} =req.params;
+        const horasTrabajadas = await recolocadorService.obtenerTotalHorasTrabajadas(idSemana,idEmpleado);
+        const tieneHorasExtras = await recolocadorService.tieneHorasExtras(idSemana,idEmpleado);
+        if(horasTrabajadas <= 48 && tieneHorasExtras == true){
+            await recursivoRealoc(idSemana,idEmpleado);
+        }
+       
+        
+        res.status(200).json({
+            horasTrabajadas:horasTrabajadas,
+            tieneHorasExtra:tieneHorasExtras,
+           });
+    }
+    catch(error){
+        return res.status(500).json({mensaje:error.message});
+    }
+}
+
+
+const recursivoRealoc = async (idSemana,idEmpleado)=>{
+
+    let tieneHorasExtras = await recolocadorService.tieneHorasExtras(idSemana,idEmpleado);
+
+
+    if(tieneHorasExtras==true){
+        let horasCercanas = await recolocadorService.obtenerHorasExtras(idSemana,idEmpleado);
+      
+        let horaMasCercanaDia = await recolocadorService.obtenerHoraMasLejanaDelDia(horasCercanas);
+        let horaSemejanteRegular = await recolocadorService.buscarSiHayHorasRegularesParaEseProyectoEnEseMismoDia(horaMasCercanaDia);
+        
+        console.log(horaSemejanteRegular,"Hora semejante regular");
+
+   
+    }
+    return;
+}
+
 
 

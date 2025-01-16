@@ -46,9 +46,10 @@ const HorasTrabajadasSchema = new Schema({
         required:false,
         default:"Ninguna",
     },
-    fechaAlta:{
+    horaCreacion:{
         type:Date,
-        required:false,
+        required:true,
+        default:Date.now
     }
 
 });
