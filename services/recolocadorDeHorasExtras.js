@@ -366,4 +366,31 @@ module.exports = {
 
 
 
+/*
+
+
+4 - Si se completan mas de 48 horas pero no cuenta con 48 horas regulares
+    hay que averiguar el numero de horas extras que se deben convertir en
+    regulares para que se completen las 48 y el resto dejarlas asi
+
+4.1 Obtener el num de horas regulares y de extras.
+4.2 Comparar si las horas regulares superan las 48 horas
+    - Si superan las 48 horas no se hace nada
+    - Si no las supera las 48 restar a 48 las horas regulares
+      eso te da el numero de horas extras que se deben de convertir
+      y se llama al realocador por horas
+
+REALOCADOR POR HORAS
+4.3 Obtiene la hora mas temprana del dia mas lejano
+4.4 Checa si las horas trabajadas de esa hora son suficientes para
+    llenar las horas a converir
+(checando si existe un registro y disminuye el num de horas extras faltantes)
+        -Si no son suficientes se convierten en regulares y se vuelve a llamar a la funcion
+        -Si son suficientes y sobrepasan el numero el numero de horas extras
+         se convierten en regulares y el sobrante se queda como extra y se sale del ciclo
+        -Si son suficientes exactamene se convierten en regulares y se sale del ciclo
+
+
+- 
+*/
 
