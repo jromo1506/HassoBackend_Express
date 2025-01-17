@@ -314,7 +314,6 @@ exports.deleteHorasValidandoSiHayExtras = async (req, res) => {
 
   exports.calcularTotalNomina = async (req, res) => {
     const { idSemana, idEmpleado } = req.params;
-    console.log(idSemana + " " + idEmpleado, "ID EMPLEADO");
     try {
         // Buscar la nómina
         const nomina = await Nomina.findOne({ idSemana, idEmpleado });
@@ -324,7 +323,7 @@ exports.deleteHorasValidandoSiHayExtras = async (req, res) => {
 
         // Obtener las horas trabajadas
         const horasTrabajadas = await HorasTrabajadas.find({ idSemana, idEmpleado });
-        console.log(horasTrabajadas,"HORAS ENCONTRADAS");
+        console.log(horasTrabajadas,"ONTRADAS");
         // Calcular el total de horas trabajadas
         let totalHoras = 0;
         if (horasTrabajadas.length) {
@@ -376,7 +375,6 @@ exports.obtenerPagoTotalHoras = async (req, res) => {
 
         // Obtener las horas trabajadas para la semana y empleado específicos
         const horasTrabajadas = await HorasTrabajadas.find({ idSemana, idEmpleado });
-        console.log(horasTrabajadas,"HORAS TRABAJADAS");
         if (!horasTrabajadas.length) {
             return res.status(404).json({ message: 'No se encontraron horas trabajadas.' });
         }
@@ -949,8 +947,7 @@ exports.recolocarHoras= async(req,res) => {
        
         
         res.status(200).json({
-            horasTrabajadas:horasTrabajadas,
-            tieneHorasExtra:tieneHorasExtras,
+            mesnaje:"Horas transformadas"
            });
     }
     catch(error){
@@ -959,23 +956,42 @@ exports.recolocarHoras= async(req,res) => {
 }
 
 
-const recursivoRealoc = async (idSemana,idEmpleado)=>{
+const recursivoRealoc = async (idSemana, idEmpleado, limiteRecursivo = 50, profundidadActual = 0) => {
+    try {
+        // Verifica que no se haya excedido el límite de recursión
+        if (profundidadActual >= limiteRecursivo) {
+            console.warn('Se alcanzó el límite de recursión. Revisa los datos de entrada.');
+            return;
+        }
 
-    let tieneHorasExtras = await recolocadorService.tieneHorasExtras(idSemana,idEmpleado);
+        // Comprueba si hay horas extras
+        const tieneHorasExtras = await recolocadorService.tieneHorasExtras(idSemana, idEmpleado);
 
+        if (!tieneHorasExtras) {
+            return; // Condición base: no hay más horas extras
+        }
 
-    if(tieneHorasExtras==true){
-        let horasCercanas = await recolocadorService.obtenerHorasExtras(idSemana,idEmpleado);
-      
-        let horaMasCercanaDia = await recolocadorService.obtenerHoraMasLejanaDelDia(horasCercanas);
-        let horaSemejanteRegular = await recolocadorService.buscarSiHayHorasRegularesParaEseProyectoEnEseMismoDia(horaMasCercanaDia);
+        // Obtiene las horas extras más cercanas
+        const horasCercanas = await recolocadorService.obtenerHorasExtras(idSemana, idEmpleado);
+        const horaMasCercanaDia = await recolocadorService.obtenerHoraMasLejanaDelDia(horasCercanas);
+        console.log(horaMasCercanaDia,"Horas sercanas dia");
+
+        // // Busca si hay horas regulares ese día en el mismo proyecto
+        const horaSemejanteRegular = await recolocadorService.buscarSiHayHorasRegularesParaEseProyectoEnEseMismoDia(horaMasCercanaDia);
         
-        console.log(horaSemejanteRegular,"Hora semejante regular");
+        if (horaSemejanteRegular!=null) {
+            // Transfiere horas extras a regulares y elimina el registro original
+            await recolocadorService.transferirHorasExtrasAHorasRegularesYEliminar(horaSemejanteRegular._id, horaMasCercanaDia._id);
+        } else {
+            // Cambia `sonHorasExtra` a `false`
+            await recolocadorService.cambiarSonHorasExtra(horaMasCercanaDia._id,false);
+        }
 
-   
+        // Llama a la función recursivamente con un incremento en la profundidad actual
+        await recursivoRealoc(idSemana, idEmpleado, limiteRecursivo, profundidadActual + 1);
+    } catch (error) {
+        console.error('Error en recursivoRealoc:', error);
+        throw error; // Lanza el error para que pueda ser manejado por quien llame a esta función
     }
-    return;
-}
-
-
+};
 
