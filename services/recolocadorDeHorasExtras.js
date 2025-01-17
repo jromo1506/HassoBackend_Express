@@ -219,7 +219,7 @@ const transferirHorasExtrasAHorasRegularesYEliminar = async(idHorarioOrigen,idHo
 }
 
 
-
+// SWITCHEA ENTRE TRUE O FALSE PARA UNA HORA 
 const cambiarSonHorasExtra = async (idHorario, nuevoValor) => {
     try {
         // Validar que el valor sea booleano
@@ -254,7 +254,101 @@ const cambiarSonHorasExtra = async (idHorario, nuevoValor) => {
 };
 
 
+// OBTIENE LA SUMA DE HORAS EXTRAS 
+const obtenerSumaHorasExtras = async (idSemana, idEmpleado) => {
+    try {
+        // Usamos el método aggregate para realizar la suma de las horas extras
+        const resultado = await HorasTrabajadas.aggregate([
+            // Filtro de semana e idEmpleado
+            { 
+                $match: {
+                    idSemana: idSemana,
+                    idEmpleado: idEmpleado,
+                    sonHorasExtra: true // Solo consideramos las horas extras
+                }
+            },
+            // Sumar las horasTrabajadas
+            {
+                $group: {
+                    _id: null, // No necesitamos un campo de agrupación, solo sumaremos
+                    totalHorasExtras: { $sum: "$horasTrabajadas" } // Sumar todas las horasTrabajadas
+                }
+            }
+        ]);
 
+        // Si no se encuentran horas extras, devolvemos 0
+        if (resultado.length === 0) {
+            return 0;
+        }
+
+        // Devuelve la suma de las horas extras
+        return resultado[0].totalHorasExtras;
+    } catch (error) {
+        console.error("Error al obtener la suma de horas extras:", error);
+        return 0;
+    }
+};
+
+// OBTIENE LA SIMA DE HORAS REGULARES
+const obtenerSumaHorasRegulares = async (idSemana, idEmpleado) => {
+    try {
+        // Usamos el método aggregate para realizar la suma de las horas regulares
+        const resultado = await HorasTrabajadas.aggregate([
+            // Filtro de semana e idEmpleado
+            { 
+                $match: {
+                    idSemana: idSemana,
+                    idEmpleado: idEmpleado,
+                    sonHorasExtra: false // Solo consideramos las horas regulares
+                }
+            },
+            // Sumar las horasTrabajadas
+            {
+                $group: {
+                    _id: null, // No necesitamos un campo de agrupación, solo sumaremos
+                    totalHorasRegulares: { $sum: "$horasTrabajadas" } // Sumar todas las horasTrabajadas
+                }
+            }
+        ]);
+
+        // Si no se encuentran horas regulares, devolvemos 0
+        if (resultado.length === 0) {
+            return 0;
+        }
+
+        // Devuelve la suma de las horas regulares
+        return resultado[0].totalHorasRegulares;
+    } catch (error) {
+        console.error("Error al obtener la suma de horas regulares:", error);
+        return 0;
+    }
+};
+
+// DETERMINA EL CASO DE PROBLEMA PARA LAS HORAS FALTANTES
+const compararHorasTrabajadas = async (idHora, horasFaltantes) => {
+    try {
+        // Obtén la hora trabajada específica
+        const hora = await HorasTrabajadas.findById(idHora);
+
+        if (!hora) {
+            return 'No se encontró la hora trabajada con el ID proporcionado.';
+        }
+
+        // Compara las horas trabajadas con las horas faltantes y devuelve el mensaje correspondiente
+        if (hora.horasTrabajadas > horasFaltantes) {
+            return 'Superan';
+        } else if (hora.horasTrabajadas < horasFaltantes) {
+            return 'NoSuperan';
+        } else {
+            return 'Exacto';
+        }
+    } catch (error) {
+        console.error("Error al comparar la hora trabajada:", error);
+        return 'Error al obtener o comparar la hora trabajada.';
+    }
+};
+
+// TODO: SOLUCIONES PARA CADA UNO DE LOS 3 CASOS
 
 
 module.exports = {
@@ -264,7 +358,10 @@ module.exports = {
     obtenerHoraMasLejanaDelDia,
     buscarSiHayHorasRegularesParaEseProyectoEnEseMismoDia,
     cambiarSonHorasExtra,
-    transferirHorasExtrasAHorasRegularesYEliminar
+    transferirHorasExtrasAHorasRegularesYEliminar,
+    obtenerSumaHorasExtras,
+    obtenerSumaHorasRegulares,
+    compararHorasTrabajadas
 }
 
 

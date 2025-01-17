@@ -941,8 +941,17 @@ exports.recolocarHoras= async(req,res) => {
         const {idSemana,idEmpleado} =req.params;
         const horasTrabajadas = await recolocadorService.obtenerTotalHorasTrabajadas(idSemana,idEmpleado);
         const tieneHorasExtras = await recolocadorService.tieneHorasExtras(idSemana,idEmpleado);
+        const sumaHorasReg = await recolocadorService.obtenerSumaHorasRegulares();
+        // const sumaHorasExt = await recolocadorService.obtenerSumaHorasExtras()
+       
+       
         if(horasTrabajadas <= 48 && tieneHorasExtras == true){
             await recursivoRealoc(idSemana,idEmpleado);
+        }
+        // Caso horas extras completando las 48 en vez de las regulares
+        else if(horasTrabajadas > 48 && sumaHorasReg < 48){
+            let horasFaltantes = 48 - sumaHorasReg;
+            await recursivoRealocMalcolocado(idSemana,idEmpleado,horasFaltantes);
         }
        
         
@@ -994,4 +1003,38 @@ const recursivoRealoc = async (idSemana, idEmpleado, limiteRecursivo = 50, profu
         throw error; // Lanza el error para que pueda ser manejado por quien llame a esta función
     }
 };
+
+
+const recursivoRealocMalcolocado = async(idSemana,idEmpleado,horasFaltantes) =>{
+    try{
+        const tieneHorasExtras = await recolocadorService.tieneHorasExtras(idSemana, idEmpleado);
+
+        if (!tieneHorasExtras) {
+            return; // Condición base: no hay más horas extras
+        }
+        const horasCercanas = await recolocadorService.obtenerHorasExtras(idSemana, idEmpleado);
+        const horaMasCercanaDia = await recolocadorService.obtenerHoraMasLejanaDelDia(horasCercanas);
+        const tipoProblema = await recolocadorService.compararHorasTrabajadas(horaMasCercanaDia._id,horasFaltantes);
+        console.log(tipoProblema);
+        switch(tipoProblema){
+            case 'Superan':{
+                break;
+            }
+            case 'Superan':{
+                break;
+            }
+            case 'Superan':{
+                break;
+            }
+            default:{
+                console.log("Problema sin definir");
+                return;
+            }
+        }
+    }
+    catch(error){
+        console.error('Error en recursivoRealoc:', error);
+        throw error;
+    }
+}
 
