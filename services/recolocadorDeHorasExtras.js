@@ -351,6 +351,44 @@ const compararHorasTrabajadas = async (idHora, horasFaltantes) => {
 // TODO: SOLUCIONES PARA CADA UNO DE LOS 3 CASOS
 
 
+const solucionSuperaHoras = async(idSemana,idEmpleado,horasFaltantes,horaMasCercanaDia)=>{
+    horasTrabajadas=horaMasCercanaDia.horasTrabajadas;
+    // Las horas extras que van a sobrar
+    horasExtrasSobrantes = horasTrabajadas - horasFaltantes;
+    // Las horas regulares (Se les tiene que hacer el proceso de buscar hora semejante)
+    horasRegulares = horasTrabajadas - horasExtrasSobrantes;
+
+    await actualizarHorasTrabajadas(horaMasCercanaDia._id,horasExtrasSobrantes);
+    /*
+    Para las horas regulares hay dos casos. el caso en el que ya hay horas regulares
+    de ese proyecto y solo se le suman o el caso en el que no hay
+    para ese caso se debe crear un clon de las horasExtras pero con el sobrante
+    de horas regulares 
+    */
+    horaSemejanteRegular = await buscarSiHayHorasRegularesParaEseProyectoEnEseMismoDia(horaMasCercanaDia);
+    if(horaSemejanteRegular != null){
+        horasAñadidas=horaSemejanteRegular.horasTrabajadas + horasRegulares;
+        await actualizarHorasTrabajadas(horaSemejanteRegular._id,horasAñadidas);
+    }
+    else{
+
+    }
+}
+
+const actualizarHorasTrabajadas = async(idHora,nuevaCantidad)=>{
+    try {
+        const resultado = await this.findByIdAndUpdate(
+            id, 
+            { horasTrabajadas: nuevasHoras }, 
+            { new: true, runValidators: true } // Retorna el documento actualizado y valida el esquema
+        );
+        return resultado;
+    } catch (error) {
+        throw new Error(`Error al actualizar las horas trabajadas: ${error.message}`);
+    }
+}
+
+
 module.exports = {
     obtenerTotalHorasTrabajadas,
     tieneHorasExtras,
@@ -361,7 +399,8 @@ module.exports = {
     transferirHorasExtrasAHorasRegularesYEliminar,
     obtenerSumaHorasExtras,
     obtenerSumaHorasRegulares,
-    compararHorasTrabajadas
+    compararHorasTrabajadas,
+    solucionSuperaHoras,
 }
 
 
