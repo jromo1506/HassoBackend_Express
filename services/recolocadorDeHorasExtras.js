@@ -371,7 +371,28 @@ const solucionSuperaHoras = async(idSemana,idEmpleado,horasFaltantes,horaMasCerc
         await actualizarHorasTrabajadas(horaSemejanteRegular._id,horasAñadidas);
     }
     else{
+        await clonarHoras(horaMasCercanaDia,horasRegulares);
+    }
 
+    return 0;
+}
+
+const clonarHoras = async(originalDocumento, nuevasHoras) =>{
+    try {
+        // Crea un nuevo objeto basado en el original con modificaciones
+        const nuevoDocumento = new HorasTrabajadas({
+            ...originalDocumento.toObject(), // Copia todos los campos del documento original
+            horasTrabajadas: nuevasHoras,   // Cambia las horas trabajadas
+            sonHorasExtra: false,          // Asegúrate de que sea `false`
+            _id: mongoose.Types.ObjectId(), // Genera un nuevo ID para evitar conflictos
+            horaCreacion: Date.now()        // Actualiza la hora de creación
+        });
+
+        // Guarda el nuevo documento en la base de datos
+        await nuevoDocumento.save();
+        return nuevoDocumento;
+    } catch (error) {
+        throw new Error(`Error al clonar el documento: ${error.message}`);
     }
 }
 

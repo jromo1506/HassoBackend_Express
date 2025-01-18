@@ -1018,12 +1018,15 @@ const recursivoRealocMalcolocado = async(idSemana,idEmpleado,horasFaltantes) =>{
         console.log(tipoProblema);
         switch(tipoProblema){
             case 'Superan':{
+                horasFaltantes = await solucionSuperaHoras(idSemana,idEmpleado,horasFaltantes,horaMasCercanaDia);
                 break;
             }
-            case 'Superan':{
+            case 'NoSuperan':{
+                console.log("No superan");
                 break;
             }
-            case 'Superan':{
+            case 'Exacto':{
+                console.log("Exacto");
                 break;
             }
             default:{
